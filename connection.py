@@ -7,11 +7,15 @@ def get_mail_ids(client):
 
 
 def connection_initialize(config):
-    client = config['imap']['transport'](config['imap']['hostname'], port=config['imap']['port'])
-    print(client.PROTOCOL_VERSION)
+    transport = config['imap']['transport']
+    hostname = config['imap']['hostname']
+    port = config['imap']['port']
+    client = transport(hostname=hostname, port=port)
     print("Connected to mail server")
-    if config['imap']['username'] and config['imap']['password']:
-        login = client.login(config['imap']['username'], config['imap']['password'])
+    username = config['imap']['username']
+    password = config['imap']['password']
+    if username and password:
+        login = client.login(username, password)
         if login[0] != 'OK':
             raise Exception("Unable to login", login)
     print("Logged in")

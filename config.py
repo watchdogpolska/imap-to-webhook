@@ -15,11 +15,13 @@ def default_qs(qs, key, default):
 def get_config(env):
     imap_parse = urlparse(env['IMAP_URL'])
     webhook = env['WEBHOOK_URL']
+    username = unquote(imap_parse.username) if imap_parse.username else None
+    password = unquote(imap_parse.password) if imap_parse.password else None
     return {
         'imap': {
             'hostname': imap_parse.hostname,
-            'username': unquote(imap_parse.username) if imap_parse.username else None,
-            'password': unquote(imap_parse.password) if imap_parse.password else None,
+            'username': username,
+            'password': password,
             'protocol': imap_parse.scheme,
             'transport': transports[imap_parse.scheme][0],
             'port': transports[imap_parse.scheme][1],

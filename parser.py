@@ -4,17 +4,18 @@ import quopri
 from io import BytesIO
 import gzip
 
-import lxml
 from html2text import html2text
 import talon
 import mailparser
 
 talon.init()
 
-decoder_map = {'base64': lambda payload: base64.b64decode(payload),
-               '': lambda payload: payload.encode('utf-8'),
-               '7bit': lambda payload: payload.encode('utf-8'),
-               'quoted-printable': lambda payload: quopri.decodestring(payload)}
+decoder_map = {
+    'base64': lambda payload: base64.b64decode(payload),
+    '': lambda payload: payload.encode('utf-8'),
+    '7bit': lambda payload: payload.encode('utf-8'),
+    'quoted-printable': lambda payload: quopri.decodestring(payload)
+}
 
 
 def get_text(mail):
@@ -61,9 +62,10 @@ def get_attachments(mail):
     attachments = []
     for attachment in mail.attachments:
         if attachment['content_transfer_encoding'] not in decoder_map:
-            msg = "Unsupported Content-Transfer Encoding ({}) in msg {}.".format(
-                attachment['content_transfer_encoding'], mail.message_id)
-            raise RuntimeError(msg)
+            msg = "Invalid Content-Transfer Encoding ({}) in msg {}.".format(
+                attachment['content_transfer_encoding'], mail.message_id
+            )
+            raise Exception(msg)
         decoder = decoder_map[attachment['content_transfer_encoding']]
 
         filename = attachment['filename']
@@ -75,7 +77,8 @@ def get_attachments(mail):
                 'content': base64.b64encode(content)
             })
         except (binascii.Error, ValueError) as e:
-            print("Unable to parse attachment '{}' in {} \n".format(filename, mail.message_id))
+            print("Unable to parse attachment '{}' in {} \n".
+                  format(filename, mail.message_id))
     return attachments
 
 

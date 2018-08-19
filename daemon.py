@@ -16,8 +16,8 @@ def move(client, msg_id, folder):
 
 def mark_delete(client, msg_id):
     print("Going to mark as deleted {}".format(msg_id))
-    mark_delete_result, data = client.uid('STORE', msg_id, '+FLAGS', '(\Deleted)')
-    if mark_delete_result != 'OK':
+    delete_result, data = client.uid('STORE', msg_id, '+FLAGS', '(\Deleted)')
+    if delete_result != 'OK':
         raise Exception("Failed to mark as deleted msg {}".format(msg_id))
 
 
@@ -38,31 +38,36 @@ def main():
         print("Found {} mails to download".format(len(msg_ids)))
 
         for msg_id in msg_ids:
-            print("Fetch message ID {}".format(msg_id))
-            result_fetch, data = client.uid('FETCH', "{0}:{0} RFC822".format(msg_id))
-            if result_fetch != 'OK':
-                raise Exception("Fetch failed!")
-
-            raw_mail = data[0][1]
-
-            try:
-                body = serialize_mail(raw_mail, config['compress_eml'])
-                try:
-                    print("Delivered message id {} :".format(msg_id), session.post(config['webhook'], json=body).json())
-                    if config['imap']['on_success'] == 'delete':
-                        mark_delete(client, msg_id)
-                    elif config['imap']['on_success'] == 'move':
-                        move(client, msg_id, config['imap']['success'])
-                    else:
-                        print("Nothing do for message id {}".format(msg_id))
-                except Exception as e:
-                    move(client, msg_id, config['imap']['error'])
-                    print("Unable to delivery message", e)
-            except Exception as e:
-                move(client, msg_id, config['imap']['error'])
-                print("Unable to parse msg", e)
+            process_msg(client, msg_id, config, session)
         connection_close(client)
         delay(config)
+
+
+def process_msg(client, msg_id, config, session):
+    print("Fetch message ID {}".format(msg_id))
+    result_fetch, data = client.uid('FETCH', "{0}:{0} RFC822".format(msg_id))
+    if result_fetch != 'OK':
+        raise Exception("Fetch failed!")
+
+    raw_mail = data[0][1]
+
+    try:
+        body = serialize_mail(raw_mail, config['compress_eml'])
+        try:
+            response = session.post(config['webhook'], json=body).json()
+            print("Delivered message id {} :".format(msg_id), response)
+            if config['imap']['on_success'] == 'delete':
+                mark_delete(client, msg_id)
+            elif config['imap']['on_success'] == 'move':
+                move(client, msg_id, config['imap']['success'])
+            else:
+                print("Nothing do for message id {}".format(msg_id))
+        except Exception as e:
+            move(client, msg_id, config['imap']['error'])
+            print("Unable to delivery message", e)
+    except Exception as e:
+        move(client, msg_id, config['imap']['error'])
+        print("Unable to parse msg", e)
 
 
 def delay(config):

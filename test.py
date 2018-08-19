@@ -1,6 +1,5 @@
 import os
 import unittest
-from pprint import pprint
 
 from parser import serialize_mail
 
@@ -21,12 +20,18 @@ class TestMain(unittest.TestCase):
     def test_disposition_notification(self):
         mail = get_email_as_bytes('disposition-notification.eml')
         body = serialize_mail(mail)
-        self.assertTrue(body['headers']['auto_reply_type'], 'disposition-notification')
+        self.assertTrue(
+            body['headers']['auto_reply_type'],
+            'disposition-notification'
+        )
 
     def test_vacation_reply(self):
         mail = get_email_as_bytes('vacation-reply.eml')
         body = serialize_mail(mail)
-        self.assertTrue(body['headers']['auto_reply_type'], 'vacation-reply')
+        self.assertTrue(
+            body['headers']['auto_reply_type'],
+            'vacation-reply'
+        )
 
     def test_html_only(self):
         mail = get_email_as_bytes('html_only.eml')
