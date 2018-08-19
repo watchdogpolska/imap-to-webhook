@@ -7,7 +7,7 @@ convenient way, well-known by web-developers, without delving into the format of
 
 Using the service requires only writing one HTTP endpoint!
 
-It cyclically retrieves IMAP messages from selected IMAP folder, parsers them into a convenient JSON object for
+It periodically retrieves IMAP messages from selected IMAP folder, parsers them into a convenient JSON object for
 use in web applications. Next to send to specified HTTP(S) endpoint. The message can be moved to
 another IMAP folder or deleted completely. In case of connection errors, the message is moved to another folder.
 
