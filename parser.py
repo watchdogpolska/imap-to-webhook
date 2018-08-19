@@ -1,6 +1,7 @@
 import base64
 import binascii
 import quopri
+import uuid
 from io import BytesIO
 import gzip
 
@@ -91,7 +92,9 @@ def get_eml(raw_mail, compress_eml):
             f.write(raw_mail)
         content = file.getvalue()
 
+    ext = '.sql.gz' if compress_eml else '.gz'
     return {
+        'filename': "{}.{}".format(uuid.uuid4().hex, ext),
         'content': base64.b64encode(content).decode('utf-8'),
         'compressed': True
     }

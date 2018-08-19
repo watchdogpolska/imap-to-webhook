@@ -62,11 +62,14 @@ Here ie example request which you can expect to receive:
         "quote": ""
     },
     "files_count": 1,
-    "files": {
-        "content": "...base64-encoded-bytes...",
-        "filename": "my-doc.txt"
-    },
+    "files": [
+        {
+            "content": "MTIzNDU=",
+            "filename": "my-doc.txt"
+        }
+    ],
     "eml": {
+        "filename": "a9a7b32cdfa34a7f91c826ff9b3831bb.eml.gz",
         "compressed": true,
         "content": "...base64-encoded-gzipped-bytes..."
     }
@@ -90,8 +93,16 @@ JSON Path                             | Description
 ```files_count```                     | Number of attachments
 ```files.*.content```                 | Base-64 encoded binary content of the attachment
 ```files.*.filename```                | Filename of attachment
-```eml.*.compressed```                | Determines whether the next field contains gzip compressed content or uncompressed.
-```eml.*.content```                   | Original ```.eml``` message without any modifications, except lossless compresion
+```eml.filename```                  | Random file name with the correct extension
+```eml.compressed```                | Determines whether the next field contains gzip compressed content or uncompressed.
+```eml.content```                   | Original ```.eml``` message without any modifications, except lossless compresion
+
+
+The request contains a header:
+
+```
+Content-Type: application/imap-to-webhook-v1+json
+```
 
 ## Run
 

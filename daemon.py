@@ -11,6 +11,9 @@ from connection import IMAPClient
 def main():
     config = get_config(os.environ)
     session = requests.Session()
+    session.headers = {
+        'Content-Type': 'application/imap-to-webhook-v1+json'
+    }
     while True:
         client = IMAPClient(config)
         msg_ids = client.get_mail_ids()
