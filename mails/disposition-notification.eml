@@ -1,0 +1,64 @@
+Return-path: <SRS0=yRPkB0=2D=batorz.gmina.pl=sekretariat@fedrowanie.siecobywatelska.pl>
+Envelope-to: sprawa-553@fedrowanie.siecobywatelska.pl
+Delivery-date: Wed, 22 Feb 2017 08:17:20 +0100
+Received: from mail by s50.hekko.net.pl with spam-scanned (Exim 4.87)
+ (envelope-from <sekretariat@batorz.gmina.pl>) id 1cgRAu-0003Bg-7z
+ for sprawa-553@fedrowanie.siecobywatelska.pl; Wed, 22 Feb 2017 08:17:20 +0100
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on s50.hekko.net.pl
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00, RCVD_IN_DNSWL_NONE, 
+ URIBL_BLOCKED autolearn=ham version=3.3.2
+Received: from smtp2.home-whs.pl ([46.41.156.5])
+ by s50.hekko.net.pl with smtps (TLSv1:DHE-RSA-AES256-SHA:256)
+ (Exim 4.87) (envelope-from <sekretariat@batorz.gmina.pl>)
+ id 1cgRAu-0003BY-56
+ for sprawa-553@fedrowanie.siecobywatelska.pl; Wed, 22 Feb 2017 08:17:20 +0100
+Received: (qmail 9146 invoked from network); 22 Feb 2017 07:17:24 -0000
+Received: from unknown (HELO h2-oxap4)
+ (sekretariat@batorz.gmina.pl@[62.129.250.114])
+ by 10.128.18.4 with ESMTPA; 22 Feb 2017 07:17:24 -0000
+Date: Wed, 22 Feb 2017 08:17:23 +0100 (CET)
+From: sekretariat sekretariat <sekretariat@batorz.gmina.pl>
+To: sprawa-553@fedrowanie.siecobywatelska.pl
+Message-ID: <986544702.70406.1487747844053@h2-oxap4.home.net.pl>
+Subject: =?UTF-8?Q?Potwierdzenie_odczytania_wiadomo=C5=9Bci?=
+MIME-Version: 1.0
+Content-Type: multipart/report; report-type=disposition-notification; 
+ boundary="----=_Part_70405_1212482293.1487747843848"
+X-Priority: 3 (normal)
+Importance: Medium
+X-Mailer: Open-Xchange Mailer v7.8.2-Rev20
+X-Originating-Client: az.pl website
+X-HEKKO: 46.41.156.5:
+
+------=_Part_70405_1212482293.1487747843848
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+To jest potwierdzenie dostarczenia dla wiadomo=C5=9Bci e-mail, kt=C3=B3r=C4=
+=85 wys=C5=82a=C5=82e=C5=9B dnia 21
+lutego 2017 do "sekretariat sekretariat" <sekretariat@batorz.gmina.pl> z te=
+matem
+"Wniosek o udost=C4=99pnienie informacji publicznej".
+
+Uwaga: to potwierdzenie dostarczenia potwierdza jedynie, =C5=BCe wiadomo=C5=
+=9B=C4=87 zosta=C5=82a
+wy=C5=9Bwietlona na komputerze odbiorcy. Nie ma gwarancji, =C5=BCe odbiorca=
+ przeczyta=C5=82
+wiadomo=C5=9B=C4=87 lub zrozumia=C5=82 jej tre=C5=9B=C4=87.
+------=_Part_70405_1212482293.1487747843848
+MIME-Version: 1.0
+Content-Type: message/disposition-notification; charset=UTF-8;
+ name=MDNPart1.txt
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename=MDNPart1.txt
+
+Reporting-UA: OPEN-XCHANGE - WebMail
+Final-Recipient: rfc822;
+ "sekretariat sekretariat" <sekretariat@batorz.gmina.pl>
+Original-Message-ID: <20170221193354.6213.51546@ubuntu>
+Disposition: manual-action/MDN-sent-manually; displayed
+
+
+------=_Part_70405_1212482293.1487747843848--
