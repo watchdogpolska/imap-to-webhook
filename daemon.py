@@ -5,75 +5,49 @@ from config import get_config
 import os
 
 from parser import serialize_mail
-from connection import get_mail_ids, connection_initialize, connection_close
-
-
-def move(client, msg_id, folder):
-    print("Going to move {} to {}".format(msg_id, folder))
-    copy(client, folder, msg_id)
-    mark_delete(client, msg_id)
-
-
-def mark_delete(client, msg_id):
-    print("Going to mark as deleted {}".format(msg_id))
-    delete_result, data = client.uid('STORE', msg_id, '+FLAGS', '(\Deleted)')
-    if delete_result != 'OK':
-        raise Exception("Failed to mark as deleted msg {}".format(msg_id))
-
-
-def copy(client, folder, msg_id):
-    print("Going to copy {} to {}".format(msg_id, folder))
-    copy_result, data = client.uid('COPY', msg_id, folder)
-    print("Copy data", data)
-    if copy_result != 'OK':
-        raise Exception("Failed to copy msg {} to {}".format(msg_id, folder))
+from connection import IMAPClient
 
 
 def main():
     config = get_config(os.environ)
     session = requests.Session()
     while True:
-        client = connection_initialize(config)
-        msg_ids = get_mail_ids(client)
+        client = IMAPClient(config)
+        msg_ids = client.get_mail_ids()
         print("Found {} mails to download".format(len(msg_ids)))
-
+        print("Identified following msg id", msg_ids)
         for msg_id in msg_ids:
             process_msg(client, msg_id, config, session)
-        connection_close(client)
-        delay(config)
+        client.expunge()
+        client.connection_close()
+        print("Waiting {} seconds".format(config['delay']))
+        time.sleep(config['delay'])
+        print("Resume after delay")
 
 
 def process_msg(client, msg_id, config, session):
     print("Fetch message ID {}".format(msg_id))
-    result_fetch, data = client.uid('FETCH', "{0}:{0} RFC822".format(msg_id))
-    if result_fetch != 'OK':
-        raise Exception("Fetch failed!")
-
-    raw_mail = data[0][1]
+    start = time.time()
+    raw_mail = client.fetch(msg_id)
+    end = time.time()
+    print("Message downloaded in {} seconds".format(end - start))
 
     try:
+        start = time.time()
         body = serialize_mail(raw_mail, config['compress_eml'])
-        try:
-            response = session.post(config['webhook'], json=body).json()
-            print("Delivered message id {} :".format(msg_id), response)
-            if config['imap']['on_success'] == 'delete':
-                mark_delete(client, msg_id)
-            elif config['imap']['on_success'] == 'move':
-                move(client, msg_id, config['imap']['success'])
-            else:
-                print("Nothing do for message id {}".format(msg_id))
-        except Exception as e:
-            move(client, msg_id, config['imap']['error'])
-            print("Unable to delivery message", e)
+        end = time.time()
+        print("Message serialized in {} seconds".format(end - start))
+        response = session.post(config['webhook'], json=body).json()
+        print("Delivered message id {} :".format(msg_id), response)
+        if config['imap']['on_success'] == 'delete':
+            client.mark_delete(msg_id)
+        elif config['imap']['on_success'] == 'move':
+            client.move(msg_id, config['imap']['success'])
+        else:
+            print("Nothing to do for message id {}".format(msg_id))
     except Exception as e:
-        move(client, msg_id, config['imap']['error'])
-        print("Unable to parse msg", e)
-
-
-def delay(config):
-    print("Waiting {} seconds".format(config['delay']))
-    time.sleep(config['delay'])
-    print("Resume after delay")
+        client.move(msg_id, config['imap']['error'])
+        print("Unable to parse or delivery msg", e)
 
 
 if __name__ == '__main__':

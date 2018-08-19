@@ -1,10 +1,13 @@
 # imap-to-webhook
 
-The service is designed to build an IMAP gateway, and any web application in a simple and convenient way.
+A stateless service is designed to build a relay between an IMAP server and any web application in a simple,
+convenient way, well-known by web-developers, without delving into the format of the mail format.
 
-It cyclically retrieves IMAP messages, parsers them into a convenient object for use in web applications. Next to 
-send to specifieed HTTP(S) endpoint. The message can be moved to another IMAP folder or deleted completely.
-In case of connection errors, the message is moved to another folder.
+Using the service requires only writing one HTTP endpoint!
+
+It cyclically retrieves IMAP messages from selected IMAP folder, parsers them into a convenient JSON object for
+use in web applications. Next to send to specified HTTP(S) endpoint. The message can be moved to
+another IMAP folder or deleted completely. In case of connection errors, the message is moved to another folder.
 
 Send JSON object, among others includes:
 
@@ -28,8 +31,67 @@ Name                      | Description
 ```COMPRESSION_EML```     | Specifies whether the sent ```.eml``` file should be compressed or not. Example: ```true```
 ```DELAY```               | The length of the interval between the next downloading of the message in seconds. Default: ```300```
 
-## Run
 
+## Request
+
+Here ie example request which you can expect to receive:
+
+```
+{
+    "headers": {
+        "auto_reply_type": "vacation-reply",
+        "cc": [],
+        "date": "2018-07-30T11:33:22",
+        "from": [
+            "user-a@siecobywatelska.pl"
+        ],
+        "message_id": "<E1fk6QU-00CPTw-Ey@s50.hekko.net.pl>",
+        "subject": "Odpowied\u017a automatyczna: \"Re: Problem z dostarczeniem odp. na fedrowanie\"",
+        "to": [
+            "user-b@siecobywatelska.pl"
+        ],
+        "to+": [
+            "user-b@siecobywatelska.pl",
+            "user-c@siecobywatelska.pl"
+        ]
+    },
+    "text": {
+        "content": "W dniach 30.07-17.08.2018 r. przebywam na urlopie.",
+        "quote": ""
+    },
+    "files_count": 1,
+    "files": {
+        "content": "...base64-encoded-bytes...",
+        "filename": "my-doc.txt"
+    },
+    "eml": {
+        "compressed": true,
+        "content": "...base64-encoded-gzipped-bytes..."
+    }
+}
+```
+
+It contains fields:
+
+JSON Path                             | Description
+------------------------------------- | -----------
+```headers.auto_reply_type```         | Indicates whether the message is automatic or send by human. Empty, if no indicators of automatic character were found.
+```headers.cc```                      | List of e-mail address in ```CC```
+```headers.date```                    | Date available of message. The values can be hijacked by the recipient to include any date
+```headers.from```                    | List of address available in ```From``` header
+```headers.message_id```              | Message identifier from the ```Message-ID``` header
+```headers.subject```                 | An additional comment is not required
+```headers.to```                      | List of e-mail address in ```To``` header
+```headers.to+```                     | List of various potential message recipients address, even redirected.
+```text.content```                    | Text content of the message, converted from HTML (if available) or text form and truncated to the new content itself
+```text.quote```                      | Content truncated from a content that is potentially a quote
+```files_count```                     | Number of attachments
+```files.*.content```                 | Base-64 encoded binary content of the attachment
+```files.*.filename```                | Filename of attachment
+```eml.*.compressed```                | Determines whether the next field contains gzip compressed content or uncompressed.
+```eml.*.content```                   | Original ```.eml``` message without any modifications, except lossless compresion
+
+## Run
 
 ```shell
 $ docker build -t imap-to-webook:latest .
@@ -61,4 +123,3 @@ Following commands are required to run tests:
 pip install -r requirements.txt
 python test.py
 ```
-

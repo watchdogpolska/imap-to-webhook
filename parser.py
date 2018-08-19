@@ -74,7 +74,7 @@ def get_attachments(mail):
             content = decoder(attachment['payload'])
             attachments.append({
                 'filename': filename,
-                'content': base64.b64encode(content)
+                'content': base64.b64encode(content).decode('utf-8')
             })
         except (binascii.Error, ValueError) as e:
             print("Unable to parse attachment '{}' in {} \n".
@@ -92,7 +92,7 @@ def get_eml(raw_mail, compress_eml):
         content = file.getvalue()
 
     return {
-        'content': base64.b64encode(content),
+        'content': base64.b64encode(content).decode('utf-8'),
         'compressed': True
     }
 
@@ -108,7 +108,7 @@ def serialize_mail(raw_mail, compress_eml=False):
             'from': [x[1] for x in mail._from] if mail.from_ else [],
             'date': mail.date.isoformat() if mail.date else [],
             'cc': [x[1] for x in mail.cc] if mail.cc else [],
-            'msg_id': mail.message_id,
+            'message_id': mail.message_id,
             'auto_reply_type': get_auto_reply_type(mail)
         },
         'text': get_text(mail),
