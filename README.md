@@ -8,10 +8,10 @@ In case of connection errors, the message is moved to another folder.
 
 Send JSON object, among others includes:
 
-    * extracted HTML (if available) or text content
-    * message divided into content and quote
-    * all attachments and filenames of them,
-    * indication if the message is automatic (vacation reply, confirmation of receipt)
+ * extracted HTML (if available) or text content
+ * message divided into content and quote
+ * all attachments and filenames of them,
+ * indication if the message is automatic (vacation reply, confirmation of receipt)
 
 ## Configuration
 
@@ -19,7 +19,10 @@ Configuration takes place via environment variables. The following environment v
 
 Name                      | Description 
 --------------------------| -----------
-```IMAP_URL```            | URL connection to access mailbox, folder to download messages (```inbox```), folder to move messages on error (````error````), folder to store messages on success (```success```). Example ````imap+ssl://user:pass@localhost/?inbox=INBOX````.
+```IMAP_URL```            | URL connection to access mailbox. Example ````imap+ssl://user:pass@localhost/?inbox=INBOX````
+```IMAP_URL?folder```     | Folder to download messages
+```IMAP_URL?error```      | Folder to move messages on error (````error````)
+```IMAP_URL?success```    | Folder to store messages on success (```success```)
 ```ON_SUCCESS```          | Action to perform on process messages. Available ```move```, ```delete```
 ```WEBHOOK_URL```         | URL endpoint to send parsed messages. Example: ```https://httpbin.org/post```
 ```COMPRESSION_EML```     | Specifies whether the sent ```.eml``` file should be compressed or not. Example: ```true```
