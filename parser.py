@@ -12,10 +12,10 @@ import mailparser
 talon.init()
 
 decoder_map = {
-    'base64': lambda payload: base64.b64decode(payload),
+    'base64': base64.b64decode,
     '': lambda payload: payload.encode('utf-8'),
     '7bit': lambda payload: payload.encode('utf-8'),
-    'quoted-printable': lambda payload: quopri.decodestring(payload)
+    'quoted-printable': quopri.decodestring
 }
 
 

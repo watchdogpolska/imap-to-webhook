@@ -43,7 +43,7 @@ class IMAPClient(object):
 
     def mark_delete(self, msg_id):
         print("Going to mark as deleted {}".format(msg_id))
-        delete_result, data = self.client.uid('STORE', msg_id, '+FLAGS', '(\Deleted)')
+        delete_result, _ = self.client.uid('STORE', msg_id, '+FLAGS', '(\Deleted)')
         if delete_result != 'OK':
             raise Exception("Failed to mark as deleted msg {}".format(msg_id))
 

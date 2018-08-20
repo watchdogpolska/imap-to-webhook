@@ -93,9 +93,9 @@ JSON Path                             | Description
 ```files_count```                     | Number of attachments
 ```files.*.content```                 | Base-64 encoded binary content of the attachment
 ```files.*.filename```                | Filename of attachment
-```eml.filename```                  | Random file name with the correct extension
-```eml.compressed```                | Determines whether the next field contains gzip compressed content or uncompressed.
-```eml.content```                   | Original ```.eml``` message without any modifications, except lossless compresion
+```eml.filename```                    | Random file name with the correct extension
+```eml.compressed```                  | Determines whether the next field contains gzip compressed content or uncompressed.
+```eml.content```                     | Original ```.eml``` message without any modifications, except lossless compresion
 
 
 The request contains a header:

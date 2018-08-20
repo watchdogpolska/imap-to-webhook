@@ -1,3 +1,4 @@
+LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 FROM python:3
 
 WORKDIR /usr/src/app

@@ -1,9 +1,10 @@
+LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 FROM python:3
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install flake8
+RUN pip install flake8==3.5.0
 COPY . .
 RUN flake8
 RUN python test.py
