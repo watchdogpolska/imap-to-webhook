@@ -6,6 +6,7 @@ import os
 
 from parser import serialize_mail
 from connection import IMAPClient
+from raven import Client
 
 
 def main():
@@ -14,7 +15,17 @@ def main():
     session.headers = {
         'Content-Type': 'application/imap-to-webhook-v1+json'
     }
-    print(config)
+    print("Configuration: ", config)
+
+    if config['sentry_dns']:
+        sentry_client = Client(config.SENTRY_DSN)
+        with sentry_client.capture_exceptions():
+            loop(config, session)
+    else:
+        loop(config, session)
+
+
+def loop(config, session):
     while True:
         client = IMAPClient(config)
         msg_ids = client.get_mail_ids()

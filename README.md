@@ -32,8 +32,8 @@ Name                      | Description
 ```ON_SUCCESS```          | Action to perform on process messages. Available ```move```, ```delete```
 ```WEBHOOK_URL```         | URL endpoint to send parsed messages. Example: ```https://httpbin.org/post```
 ```COMPRESSION_EML```     | Specifies whether the sent ```.eml``` file should be compressed or not. Example: ```true```
-```DELAY```               | The length of the interval between the next downloading of the message in seconds. Default: ```300```
-
+```DELAY```               | Length of the interval between the next downloading of the message in seconds. Default: ```300```
+```SENTRY_DSN```          | [Sentry DSN](https://docs.sentry.io/clients/python/#configuring-the-client) to report application exceptions. Not set to disable Sentry.
 
 ## Request
 
