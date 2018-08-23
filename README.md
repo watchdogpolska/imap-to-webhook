@@ -1,6 +1,7 @@
 # imap-to-webhook
 
 [![Build Status](https://travis-ci.com/watchdogpolska/imap-to-webhook.svg?branch=master)](https://travis-ci.com/watchdogpolska/imap-to-webhook)
+[![Docker Repository on Quay](https://quay.io/repository/watchdogpolska/imap-to-webhook/status "Docker Repository on Quay")](https://quay.io/repository/watchdogpolska/imap-to-webhook)
 
 A stateless service is designed to build a relay between an IMAP server and any web application in a simple,
 convenient way, well-known by web-developers, without delving into the format of the mail format.
