@@ -4,7 +4,7 @@ import imaplib
 
 transports = {
     'imap': [imaplib.IMAP4, 143],
-    'imap_ssl': [imaplib.IMAP4_SSL, 993]
+    'imap+ssl': [imaplib.IMAP4_SSL, 993]
 }
 
 

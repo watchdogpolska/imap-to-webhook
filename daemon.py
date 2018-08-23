@@ -18,21 +18,21 @@ def main():
     print("Configuration: ", config)
 
     if config['sentry_dns']:
-        sentry_client = Client(config.SENTRY_DSN)
+        sentry_client = Client(config['SENTRY_DSN'])
         with sentry_client.capture_exceptions():
-            loop(config, session)
+            loop(config, session, sentry_client)
     else:
-        loop(config, session)
+        loop(config, session, None)
 
 
-def loop(config, session):
+def loop(config, session, sentry_client=None):
     while True:
         client = IMAPClient(config)
         msg_ids = client.get_mail_ids()
         print("Found {} mails to download".format(len(msg_ids)))
         print("Identified following msg id", msg_ids)
         for msg_id in msg_ids:
-            process_msg(client, msg_id, config, session)
+            process_msg(client, msg_id, config, session, sentry_client)
         client.expunge()
         client.connection_close()
         print("Waiting {} seconds".format(config['delay']))
@@ -40,7 +40,7 @@ def loop(config, session):
         print("Resume after delay")
 
 
-def process_msg(client, msg_id, config, session):
+def process_msg(client, msg_id, config, session, sentry_client=None):
     print("Fetch message ID {}".format(msg_id))
     start = time.time()
     raw_mail = client.fetch(msg_id)
@@ -61,6 +61,8 @@ def process_msg(client, msg_id, config, session):
         else:
             print("Nothing to do for message id {}".format(msg_id))
     except Exception as e:
+        if sentry_client:
+            sentry_client.captureException()
         client.move(msg_id, config['imap']['error'])
         print("Unable to parse or delivery msg", e)
 
