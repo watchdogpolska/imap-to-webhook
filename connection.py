@@ -25,7 +25,8 @@ class IMAPClient(object):
         return data[0].decode('utf-8').split()
 
     def fetch(self, msg_id):
-        result_fetch, data = self.client.uid('FETCH', "{0}:{0} RFC822".format(msg_id))
+        result_fetch, data = self.client.uid('FETCH',
+                                             "{0}:{0} RFC822".format(msg_id))
         if result_fetch != 'OK':
             raise Exception("Fetch failed!")
         return data[0][1]
@@ -43,7 +44,8 @@ class IMAPClient(object):
 
     def mark_delete(self, msg_id):
         print("Going to mark as deleted {}".format(msg_id))
-        delete_result, _ = self.client.uid('STORE', msg_id, '+FLAGS', '(\Deleted)')
+        delete_result, _ = self.client.uid('STORE', msg_id,
+                                           '+FLAGS', '(\Deleted)')
         if delete_result != 'OK':
             raise Exception("Failed to mark as deleted msg {}".format(msg_id))
 
@@ -52,7 +54,8 @@ class IMAPClient(object):
         copy_result, data = self.client.uid('COPY', msg_id, folder)
         if copy_result != 'OK':
             print(copy_result, data)
-            raise Exception("Failed to copy msg {} to {}".format(msg_id, folder))
+            raise Exception("Failed to copy msg {} to {}".
+                            format(msg_id, folder))
 
     def expunge(self):
         self.client.expunge()
