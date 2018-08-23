@@ -1,5 +1,5 @@
-LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 FROM python:3
+LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 
 WORKDIR /usr/src/app
 
