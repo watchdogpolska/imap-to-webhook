@@ -1,6 +1,5 @@
 requests==2.19.1
-# mail-parser==3.4.1 # missing https://github.com/SpamScope/mail-parser/pull/37
-https://github.com/watchdogpolska/mail-parser/archive/text_html.tar.gz
+mail-parser==3.6.0
 html2text==2018.1.9
 talon==1.4.4
 ipdb==0.11

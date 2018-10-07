@@ -1,6 +1,7 @@
 import base64
 import binascii
 import quopri
+import re
 import uuid
 from io import BytesIO
 import gzip
@@ -48,15 +49,26 @@ def get_auto_reply_type(mail):
 
 
 def get_to_plus(mail):
-    to_plus = list([x[1] for x in mail.to] if mail.to else [])
+    to_plus = set([x[1] for x in mail.to] if mail.to else [])
 
     if mail.delivered_to:
-        to_plus.extend([x[1] for x in mail.delivered_to])
+        to_plus.update(x[1] for x in mail.delivered_to)
     if mail.cc:
-        to_plus.extend([x[1] for x in mail.cc])
+        to_plus.update(x[1] for x in mail.cc)
     if mail.bcc:
-        to_plus.extend([x[1] for x in mail.bcc])
-    return to_plus
+        to_plus.update(x[1] for x in mail.bcc)
+    to_plus.update(
+        match.group(1)
+        for match in
+        [
+            re.search('for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)', r['others'])
+            for r in mail.received
+            if 'others' in r
+        ]
+        if match
+    )
+    to_plus.update(r['for'] for r in mail.received if 'for' in r)
+    return list(to_plus)
 
 
 def get_attachments(mail):
