@@ -33,5 +33,5 @@ def get_config(env):
         'webhook': webhook,
         'compress_eml': env.get('COMPRESS_EML', 'false') == 'true',
         'delay': int(env['DELAY']) if 'DELAY' in env else 60*5,
-        'sentry_dns': env.get('SENTRY_DSN', None)
+        'sentry_dsn': env.get('SENTRY_DSN', None)
     }
