@@ -18,7 +18,7 @@ def main():
     print("Configuration: ", config)
 
     if config['sentry_dns']:
-        sentry_client = Client(config['SENTRY_DSN'])
+        sentry_client = Client(config['sentry_dsn'])
         with sentry_client.capture_exceptions():
             loop(config, session, sentry_client)
     else:
