@@ -7,7 +7,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends g++=4:6.3.0-4 &&\
     pip install --no-cache-dir -r requirements.txt &&\
     apt-get remove -y g++ && apt-get autoremove -y &&\
-    rm /var/lib/apt/lists -r
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 COPY . .
 
 # Testing
