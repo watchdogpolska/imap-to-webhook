@@ -3,4 +3,4 @@ mail-parser==3.8.1
 html2text==2018.1.9
 talon==1.4.4
 ipdb==0.11
-raven==6.9.0
+raven==6.10.0
