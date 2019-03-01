@@ -1,5 +1,5 @@
 requests==2.21.0
-mail-parser==3.7.1
+mail-parser==3.9.2
 html2text==2018.1.9
 talon==1.4.4
 ipdb==0.11
