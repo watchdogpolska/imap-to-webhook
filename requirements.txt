@@ -1,4 +1,4 @@
-requests==2.20.1
+requests==2.21.0
 mail-parser==3.7.1
 html2text==2018.1.9
 talon==1.4.4
