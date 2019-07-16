@@ -1,6 +1,6 @@
 requests==2.22.0
 mail-parser==3.9.3
 html2text==2018.1.9
-https://github.com/mailgun/talon/archive/v1.4.5.tar.gz
+https://github.com/mailgun/talon/archive/v1.4.6.tar.gz
 ipdb==0.12
 raven==6.10.0
