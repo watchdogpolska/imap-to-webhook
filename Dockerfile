@@ -9,6 +9,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
  && pip install --no-cache-dir -r requirements.txt \
  && apt-get remove -y g++ && apt-get autoremove -y
+ENV PYTHONUNBUFFERED=1
 COPY . .
 
 # Testing
