@@ -31,13 +31,15 @@ def loop(config, session, sentry_client=None):
         msg_ids = client.get_mail_ids()
         print("Found {} mails to download".format(len(msg_ids)))
         print("Identified following msg id", msg_ids)
+        any_message = bool(msg_ids)
         if msg_ids:
             process_msg(client, msg_ids[0], config, session, sentry_client)
         client.expunge()
         client.connection_close()
-        print("Waiting {} seconds".format(config['delay']))
-        time.sleep(config['delay'])
-        print("Resume after delay")
+        if not any_message:
+            print("Waiting {} seconds".format(config['delay']))
+            time.sleep(config['delay'])
+            print("Resume after delay")
 
 
 def process_msg(client, msg_id, config, session, sentry_client=None):
