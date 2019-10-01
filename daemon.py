@@ -50,7 +50,7 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
         end = time.time()
         print("Message serialized in {} seconds".format(end - start))
         res = session.post(config['webhook'], files=body)
-        print(res.text)
+        print("Received response:", res.text)
         res.raise_for_status()
         response = res.json()
         print("Delivered message id {} :".format(msg_id), response)
