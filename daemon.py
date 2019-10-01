@@ -12,11 +12,7 @@ from raven import Client
 def main():
     config = get_config(os.environ)
     session = requests.Session()
-    session.headers = {
-        'Content-Type': 'application/imap-to-webhook-v1+json'
-    }
     print("Configuration: ", config)
-
     if config['sentry_dsn']:
         sentry_client = Client(config['sentry_dsn'])
         with sentry_client.capture_exceptions():
@@ -54,7 +50,11 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
         body = serialize_mail(raw_mail, config['compress_eml'])
         end = time.time()
         print("Message serialized in {} seconds".format(end - start))
-        response = session.post(config['webhook'], json=body).json()
+        res = session.post(config['webhook'], files=body)
+        print(res.text)
+        res.raise_for_status()
+        response = res.json()
+        
         print("Delivered message id {} :".format(msg_id), response)
         if config['imap']['on_success'] == 'delete':
             client.mark_delete(msg_id)
