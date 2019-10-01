@@ -135,9 +135,9 @@ def serialize_mail(raw_mail, compress_eml=False):
         ('manifest', ('manifest.json', BytesIO(json.dumps(body).encode('utf-8')), JSON_MIME))
     )
     # Build eml
-    eml_ext = '.sql.gz' if compress_eml else '.gz'
-    eml_mime = GZ_MIME if compress_eml else EML_MIME
+    eml_ext = 'eml.gz' if compress_eml else 'eml'
     eml_name =  "{}.{}".format(uuid.uuid4().hex, eml_ext)
+    eml_mime = GZ_MIME if compress_eml else EML_MIME
 
     files.append(
         ('eml', (eml_name, BytesIO(get_eml(raw_mail, compress_eml)), eml_mime))
