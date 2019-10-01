@@ -8,7 +8,6 @@ from parser import serialize_mail
 from connection import IMAPClient
 from raven import Client
 
-
 def main():
     config = get_config(os.environ)
     session = requests.Session()
@@ -51,8 +50,9 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
         end = time.time()
         print("Message serialized in {} seconds".format(end - start))
         res = session.post(config['webhook'], files=body)
+        print(res.text)
         res.raise_for_status()
-        response = res.json()        
+        response = res.json()
         print("Delivered message id {} :".format(msg_id), response)
         if config['imap']['on_success'] == 'delete':
             client.mark_delete(msg_id)

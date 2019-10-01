@@ -10,7 +10,10 @@ from io import BytesIO
 import mailparser
 import talon
 from html2text import html2text
+<<<<<<< 88c085aebca3165ffde1de1e76bf5bc90e27aa8e
 
+=======
+>>>>>>> Fix tests
 
 talon.init()
 
@@ -26,7 +29,10 @@ JSON_MIME = 'application/json'
 GZ_MIME = 'application/gzip'
 EML_MIME = 'message/rfc822'
 BINARY_MIME = 'application/octet-stream'
+<<<<<<< 88c085aebca3165ffde1de1e76bf5bc90e27aa8e
 
+=======
+>>>>>>> Fix tests
 
 def get_text(mail):
     raw_content, html_content, plain_content, html_quote, plain_quote = '', '', '', '', ''
