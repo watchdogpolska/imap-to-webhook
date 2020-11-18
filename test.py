@@ -37,6 +37,7 @@ class TestMain(unittest.TestCase):
         mail = get_email_as_bytes('html_only.eml')
         body = serialize_mail(mail)
         self.assertTrue(body['text']['content'])
+        self.assertTrue(body['text']['html_content'])
 
 
 if __name__ == '__main__':
