@@ -44,6 +44,7 @@ class TestMain(unittest.TestCase):
         body_map = {k:v for k, v in body}
         manifest = json.loads(body_map['manifest'][1].read().decode('utf-8'))
         self.assertTrue(manifest['text']['content'])
+        self.assertTrue(manifest['text']['html_content'])
 
 
 if __name__ == '__main__':

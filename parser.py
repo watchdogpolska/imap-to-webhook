@@ -11,6 +11,7 @@ import mailparser
 import talon
 from html2text import html2text
 
+
 talon.init()
 
 decoder_map = {
@@ -26,22 +27,26 @@ EML_MIME = 'message/rfc822'
 BINARY_MIME = 'application/octet-stream'
 
 def get_text(mail):
-    raw_content, content, quote = '', '', ''
+    raw_content, html_content, plain_content, html_quote, plain_quote = '', '', '', '', ''
 
     if mail.text_html:
-        raw_content = "".join(mail.text_html).replace("\r\n", "\n")
-        content = talon.quotations.extract_from_html(raw_content)
-        quote = raw_content.replace(content, '')
-        content = html2text(content)
+        raw_content = ''.join(mail.text_html).replace('\r\n', '\n')
+        html_content = talon.quotations.extract_from_html(raw_content)
+        html_quote = raw_content.replace(html_content, '')
+        plain_content = html2text(html_content)
 
-    if mail.text_plain or not content:
-        raw_content = "".join(mail.text_plain)
-        content = talon.quotations.extract_from_plain(raw_content)
-        quote = raw_content.replace(content, '')
+    if mail.text_plain or not plain_content:
+        raw_content = ''.join(mail.text_plain)
+        plain_content = talon.quotations.extract_from_plain(raw_content)
+        plain_quote = raw_content.replace(plain_content, '')
 
+    # 'content' item holds plain_content and 'quote' item holds plain_quote (with HTML stripped off).
+    # These names are used for backward compatibility.
     return {
-        'content': content,
-        'quote': quote
+        'html_content': html_content,
+        'content': plain_content,
+        'html_quote': html_quote,
+        'quote': plain_quote
     }
 
 
@@ -66,7 +71,7 @@ def get_to_plus(mail):
         match.group(1)
         for match in
         [
-            re.search('for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)', r['others'])
+            re.search(r'for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)', r['others'])
             for r in mail.received
             if 'others' in r
         ]
