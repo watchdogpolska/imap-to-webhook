@@ -26,6 +26,7 @@ GZ_MIME = 'application/gzip'
 EML_MIME = 'message/rfc822'
 BINARY_MIME = 'application/octet-stream'
 
+
 def get_text(mail):
     raw_content, html_content, plain_content, html_quote, plain_quote = '', '', '', '', ''
 
@@ -115,6 +116,7 @@ def get_eml(raw_mail, compress_eml):
         content = file.getvalue()
     return content
 
+
 def serialize_mail(raw_mail, compress_eml=False):
     mail = mailparser.parse_from_bytes(raw_mail)
     files = []
@@ -141,7 +143,7 @@ def serialize_mail(raw_mail, compress_eml=False):
     )
     # Build eml
     eml_ext = 'eml.gz' if compress_eml else 'eml'
-    eml_name =  "{}.{}".format(uuid.uuid4().hex, eml_ext)
+    eml_name = "{}.{}".format(uuid.uuid4().hex, eml_ext)
     eml_mime = GZ_MIME if compress_eml else EML_MIME
 
     files.append(
