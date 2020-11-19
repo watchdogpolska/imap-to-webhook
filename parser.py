@@ -12,6 +12,7 @@ import talon
 from html2text import html2text
 
 
+
 talon.init()
 
 decoder_map = {
