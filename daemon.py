@@ -13,7 +13,7 @@ def main():
     config = get_config(os.environ)
     session = requests.Session()
     session.headers = {
-        'Content-Type': 'application/imap-to-webhook-v1+json'
+        'Content-Type': 'application/imap-to-webhook-v2+json'
     }
     print("Configuration: ", config)
     if config['sentry_dsn']:
