@@ -132,6 +132,7 @@ def serialize_mail(raw_mail, compress_eml=False):
             'message_id': mail.message_id,
             'auto_reply_type': get_auto_reply_type(mail)
         },
+        'version': 'v2',
         'text': get_text(mail),
         'files_count': len(mail.attachments),
         'eml': {
