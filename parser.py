@@ -1,14 +1,16 @@
 import base64
 import binascii
+import gzip
+import json
 import quopri
 import re
 import uuid
 from io import BytesIO
-import gzip
 
-from html2text import html2text
-import talon
 import mailparser
+import talon
+from html2text import html2text
+
 
 talon.init()
 
@@ -19,24 +21,33 @@ decoder_map = {
     'quoted-printable': quopri.decodestring
 }
 
+JSON_MIME = 'application/json'
+GZ_MIME = 'application/gzip'
+EML_MIME = 'message/rfc822'
+BINARY_MIME = 'application/octet-stream'
+
 
 def get_text(mail):
-    raw_content, content, quote = '', '', ''
+    raw_content, html_content, plain_content, html_quote, plain_quote = '', '', '', '', ''
 
     if mail.text_html:
-        raw_content = "".join(mail.text_html).replace("\r\n", "\n")
-        content = talon.quotations.extract_from_html(raw_content)
-        quote = raw_content.replace(content, '')
-        content = html2text(content)
+        raw_content = ''.join(mail.text_html).replace('\r\n', '\n')
+        html_content = talon.quotations.extract_from_html(raw_content)
+        html_quote = raw_content.replace(html_content, '')
+        plain_content = html2text(html_content)
 
-    if mail.text_plain or not content:
-        raw_content = "".join(mail.text_plain)
-        content = talon.quotations.extract_from_plain(raw_content)
-        quote = raw_content.replace(content, '')
+    if mail.text_plain or not plain_content:
+        raw_content = ''.join(mail.text_plain)
+        plain_content = talon.quotations.extract_from_plain(raw_content)
+        plain_quote = raw_content.replace(plain_content, '')
 
+    # 'content' item holds plain_content and 'quote' item holds plain_quote (with HTML stripped off).
+    # These names are used for backward compatibility.
     return {
-        'content': content,
-        'quote': quote
+        'html_content': html_content,
+        'content': plain_content,
+        'html_quote': html_quote,
+        'quote': plain_quote
     }
 
 
@@ -61,7 +72,7 @@ def get_to_plus(mail):
         match.group(1)
         for match in
         [
-            re.search('for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)', r['others'])
+            re.search(r'for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)', r['others'])
             for r in mail.received
             if 'others' in r
         ]
@@ -85,13 +96,13 @@ def get_attachments(mail):
 
         try:
             content = decoder(attachment['payload'])
-            attachments.append({
-                'filename': filename,
-                'content': base64.b64encode(content).decode('utf-8')
-            })
-        except (binascii.Error, ValueError) as e:
-            print("Unable to parse attachment '{}' in {} \n".
-                  format(filename, mail.message_id))
+            attachments.append((
+                filename,
+                BytesIO(content),
+                BINARY_MIME
+            ))
+        except (binascii.Error, ValueError):
+            print("Unable to parse attachment '{}' in {} \n".format(filename, mail.message_id))
     return attachments
 
 
@@ -103,18 +114,13 @@ def get_eml(raw_mail, compress_eml):
         with gzip.open(file, 'wb') as f:
             f.write(raw_mail)
         content = file.getvalue()
-
-    ext = '.sql.gz' if compress_eml else '.gz'
-    return {
-        'filename': "{}.{}".format(uuid.uuid4().hex, ext),
-        'content': base64.b64encode(content).decode('utf-8'),
-        'compressed': True
-    }
+    return content
 
 
 def serialize_mail(raw_mail, compress_eml=False):
     mail = mailparser.parse_from_bytes(raw_mail)
-
+    files = []
+    # Build manifest
     body = {
         'headers': {
             'subject': mail.subject,
@@ -126,9 +132,25 @@ def serialize_mail(raw_mail, compress_eml=False):
             'message_id': mail.message_id,
             'auto_reply_type': get_auto_reply_type(mail)
         },
+        'version': 'v2',
         'text': get_text(mail),
-        'eml': get_eml(raw_mail, compress_eml),
         'files_count': len(mail.attachments),
-        'files': get_attachments(mail)
+        'eml': {
+            'compressed': compress_eml,
+        }
     }
-    return body
+    files.append(
+        ('manifest', ('manifest.json', BytesIO(json.dumps(body).encode('utf-8')), JSON_MIME))
+    )
+    # Build eml
+    eml_ext = 'eml.gz' if compress_eml else 'eml'
+    eml_name = "{}.{}".format(uuid.uuid4().hex, eml_ext)
+    eml_mime = GZ_MIME if compress_eml else EML_MIME
+
+    files.append(
+        ('eml', (eml_name, BytesIO(get_eml(raw_mail, compress_eml)), eml_mime))
+    )
+    # Build attachments
+    for att in get_attachments(mail):
+        files.append(('attachment', att))
+    return files
