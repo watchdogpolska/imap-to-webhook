@@ -18,6 +18,7 @@ decoder_map = {
     'base64': base64.b64decode,
     '': lambda payload: payload.encode('utf-8'),
     '7bit': lambda payload: payload.encode('utf-8'),
+    '8bit': lambda payload: payload.encode('utf-8'),
     'quoted-printable': quopri.decodestring
 }
 
@@ -115,7 +116,6 @@ def get_eml(raw_mail, compress_eml):
             f.write(raw_mail)
         content = file.getvalue()
     return content
-
 
 def serialize_mail(raw_mail, compress_eml=False):
     mail = mailparser.parse_from_bytes(raw_mail)
