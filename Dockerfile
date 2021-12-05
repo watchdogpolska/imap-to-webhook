@@ -1,4 +1,4 @@
-FROM python:3-slim as build
+FROM python:3.9-slim as build
 LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 
 WORKDIR /usr/src/app
