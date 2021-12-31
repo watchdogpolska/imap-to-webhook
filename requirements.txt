@@ -2,5 +2,5 @@ requests==2.22.0
 mail-parser==3.9.3
 html2text==2019.8.11
 talon==1.4.4
-ipdb==0.12.2
+ipdb==0.13.9
 raven==6.10.0
