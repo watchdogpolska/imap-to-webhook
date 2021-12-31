@@ -147,7 +147,6 @@ def serialize_mail(raw_mail, compress_eml=False):
     files = []
     # Build manifest
     body = get_manifest(mail, compress_eml)
-    print('Headers of message', body['headers'])
     files.append(
         (
             "manifest",
