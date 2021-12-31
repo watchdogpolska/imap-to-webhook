@@ -147,6 +147,7 @@ def serialize_mail(raw_mail, compress_eml=False):
     files = []
     # Build manifest
     body = get_manifest(mail, compress_eml)
+    print('Headers of message', body['headers'])
     files.append(
         (
             "manifest",
@@ -165,3 +166,12 @@ def serialize_mail(raw_mail, compress_eml=False):
     for att in get_attachments(mail):
         files.append(("attachment", att))
     return files
+
+
+if __name__ == "__main__":
+    import sys, pprint
+    with open(sys.argv[1], 'rb') as fp:
+        raw_mail = fp.read()
+        mail = mailparser.parse_from_bytes(raw_mail)
+        body = get_manifest(mail, False)
+        json.dump(body, sys.stdout, indent=4)
