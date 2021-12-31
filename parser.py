@@ -10,59 +10,57 @@ from io import BytesIO
 import mailparser
 import talon
 from html2text import html2text
-<<<<<<< 88c085aebca3165ffde1de1e76bf5bc90e27aa8e
-
-=======
->>>>>>> Fix tests
 
 talon.init()
 
 decoder_map = {
-    'base64': base64.b64decode,
-    '': lambda payload: payload.encode('utf-8'),
-    '7bit': lambda payload: payload.encode('utf-8'),
-    '8bit': lambda payload: payload.encode('utf-8'),
-    'quoted-printable': quopri.decodestring
+    "base64": base64.b64decode,
+    "": lambda payload: payload.encode("utf-8"),
+    "7bit": lambda payload: payload.encode("utf-8"),
+    "8bit": lambda payload: payload.encode("utf-8"),
+    "quoted-printable": quopri.decodestring,
 }
 
-JSON_MIME = 'application/json'
-GZ_MIME = 'application/gzip'
-EML_MIME = 'message/rfc822'
-BINARY_MIME = 'application/octet-stream'
-<<<<<<< 88c085aebca3165ffde1de1e76bf5bc90e27aa8e
-
-=======
->>>>>>> Fix tests
+JSON_MIME = "application/json"
+GZ_MIME = "application/gzip"
+EML_MIME = "message/rfc822"
+BINARY_MIME = "application/octet-stream"
 
 def get_text(mail):
-    raw_content, html_content, plain_content, html_quote, plain_quote = '', '', '', '', ''
+    raw_content, html_content, plain_content, html_quote, plain_quote = (
+        "",
+        "",
+        "",
+        "",
+        "",
+    )
 
     if mail.text_html:
-        raw_content = ''.join(mail.text_html).replace('\r\n', '\n')
+        raw_content = "".join(mail.text_html).replace("\r\n", "\n")
         html_content = talon.quotations.extract_from_html(raw_content)
-        html_quote = raw_content.replace(html_content, '')
+        html_quote = raw_content.replace(html_content, "")
         plain_content = html2text(html_content)
 
     if mail.text_plain or not plain_content:
-        raw_content = ''.join(mail.text_plain)
+        raw_content = "".join(mail.text_plain)
         plain_content = talon.quotations.extract_from_plain(raw_content)
-        plain_quote = raw_content.replace(plain_content, '')
+        plain_quote = raw_content.replace(plain_content, "")
 
     # 'content' item holds plain_content and 'quote' item holds plain_quote (with HTML stripped off).
     # These names are used for backward compatibility.
     return {
-        'html_content': html_content,
-        'content': plain_content,
-        'html_quote': html_quote,
-        'quote': plain_quote
+        "html_content": html_content,
+        "content": plain_content,
+        "html_quote": html_quote,
+        "quote": plain_quote,
     }
 
 
 def get_auto_reply_type(mail):
-    if 'report-type=disposition-notification' in mail.content_type:
-        return 'disposition-notification'
-    if mail.auto_submitted and mail.auto_submitted.lower() == 'auto-replied':
-        return 'vacation-reply'
+    if "report-type=disposition-notification" in mail.content_type:
+        return "disposition-notification"
+    if mail.auto_submitted and mail.auto_submitted.lower() == "auto-replied":
+        return "vacation-reply"
     return None
 
 
@@ -77,39 +75,38 @@ def get_to_plus(mail):
         to_plus.update(x[1] for x in mail.bcc)
     to_plus.update(
         match.group(1)
-        for match in
-        [
-            re.search(r'for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)', r['others'])
+        for match in [
+            re.search(r"for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)", r["others"])
             for r in mail.received
-            if 'others' in r
+            if "others" in r
         ]
         if match
     )
-    to_plus.update(r['for'] for r in mail.received if 'for' in r)
+    to_plus.update(r["for"] for r in mail.received if "for" in r)
     return list(to_plus)
 
 
 def get_attachments(mail):
     attachments = []
     for attachment in mail.attachments:
-        if attachment['content_transfer_encoding'] not in decoder_map:
+        if attachment["content_transfer_encoding"] not in decoder_map:
             msg = "Invalid Content-Transfer Encoding ({}) in msg {}.".format(
-                attachment['content_transfer_encoding'], mail.message_id
+                attachment["content_transfer_encoding"], mail.message_id
             )
             raise Exception(msg)
-        decoder = decoder_map[attachment['content_transfer_encoding']]
+        decoder = decoder_map[attachment["content_transfer_encoding"]]
 
-        filename = attachment['filename']
+        filename = attachment["filename"]
 
         try:
-            content = decoder(attachment['payload'])
-            attachments.append((
-                filename,
-                BytesIO(content),
-                BINARY_MIME
-            ))
+            content = decoder(attachment["payload"])
+            attachments.append((filename, BytesIO(content), BINARY_MIME))
         except (binascii.Error, ValueError):
-            print("Unable to parse attachment '{}' in {} \n".format(filename, mail.message_id))
+            print(
+                "Unable to parse attachment '{}' in {} \n".format(
+                    filename, mail.message_id
+                )
+            )
     return attachments
 
 
@@ -118,30 +115,32 @@ def get_eml(raw_mail, compress_eml):
 
     if compress_eml:
         file = BytesIO()
-        with gzip.open(file, 'wb') as f:
+        with gzip.open(file, "wb") as f:
             f.write(raw_mail)
         content = file.getvalue()
     return content
 
+
 def get_manifest(mail, compress_eml):
     return {
-        'headers': {
-            'subject': mail.subject,
-            'to': [x[1] for x in mail.to] if mail.to else [],
-            'to+': get_to_plus(mail),
-            'from': [x[1] for x in mail._from] if mail.from_ else [],
-            'date': mail.date.isoformat() if mail.date else [],
-            'cc': [x[1] for x in mail.cc] if mail.cc else [],
-            'message_id': mail.message_id,
-            'auto_reply_type': get_auto_reply_type(mail)
+        "headers": {
+            "subject": mail.subject,
+            "to": [x[1] for x in mail.to] if mail.to else [],
+            "to+": get_to_plus(mail),
+            "from": [x[1] for x in mail._from] if mail.from_ else [],
+            "date": mail.date.isoformat() if mail.date else [],
+            "cc": [x[1] for x in mail.cc] if mail.cc else [],
+            "message_id": mail.message_id,
+            "auto_reply_type": get_auto_reply_type(mail),
         },
-        'version': 'v2',
-        'text': get_text(mail),
-        'files_count': len(mail.attachments),
-        'eml': {
-            'compressed': compress_eml,
-        }
+        "version": "v2",
+        "text": get_text(mail),
+        "files_count": len(mail.attachments),
+        "eml": {
+            "compressed": compress_eml,
+        },
     }
+
 
 def serialize_mail(raw_mail, compress_eml=False):
     mail = mailparser.parse_from_bytes(raw_mail)
@@ -149,17 +148,20 @@ def serialize_mail(raw_mail, compress_eml=False):
     # Build manifest
     body = get_manifest(mail, compress_eml)
     files.append(
-        ('manifest', ('manifest.json', BytesIO(json.dumps(body).encode('utf-8')), JSON_MIME))
+        (
+            "manifest",
+            ("manifest.json", BytesIO(json.dumps(body).encode("utf-8")), JSON_MIME),
+        )
     )
     # Build eml
-    eml_ext = 'eml.gz' if compress_eml else 'eml'
+    eml_ext = "eml.gz" if compress_eml else "eml"
     eml_name = "{}.{}".format(uuid.uuid4().hex, eml_ext)
     eml_mime = GZ_MIME if compress_eml else EML_MIME
 
     files.append(
-        ('eml', (eml_name, BytesIO(get_eml(raw_mail, compress_eml)), eml_mime))
+        ("eml", (eml_name, BytesIO(get_eml(raw_mail, compress_eml)), eml_mime))
     )
     # Build attachments
     for att in get_attachments(mail):
-        files.append(('attachment', att))
+        files.append(("attachment", att))
     return files

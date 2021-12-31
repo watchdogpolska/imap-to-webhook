@@ -1,21 +1,23 @@
+import os
 import time
+from parser import serialize_mail
+
 import requests
+import sentry_sdk
 
 from config import get_config
-import os
-
-from parser import serialize_mail
 from connection import IMAPClient
-from raven import Client
 
 def main():
     config = get_config(os.environ)
     session = requests.Session()
     print("Configuration: ", config)
-    if config['sentry_dsn']:
-        sentry_client = Client(config['sentry_dsn'])
-        with sentry_client.capture_exceptions():
-            loop(config, session, sentry_client)
+    sentry_sdk.init(dsn=config["sentry_dsn"], traces_sample_rate=1.0)
+    if config["sentry_dsn"]:
+        try:
+            loop(config, session)
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
     else:
         loop(config, session, None)
 
@@ -32,8 +34,8 @@ def loop(config, session, sentry_client=None):
         client.expunge()
         client.connection_close()
         if not any_message:
-            print("Waiting {} seconds".format(config['delay']))
-            time.sleep(config['delay'])
+            print("Waiting {} seconds".format(config["delay"]))
+            time.sleep(config["delay"])
             print("Resume after delay")
 
 
@@ -46,7 +48,7 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
 
     try:
         start = time.time()
-        body = serialize_mail(raw_mail, config['compress_eml'])
+        body = serialize_mail(raw_mail, config["compress_eml"])
         end = time.time()
         print("Message serialized in {} seconds".format(end - start))
         res = session.post(config['webhook'], files=body)
@@ -54,18 +56,17 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
         res.raise_for_status()
         response = res.json()
         print("Delivered message id {} :".format(msg_id), response)
-        if config['imap']['on_success'] == 'delete':
+        if config["imap"]["on_success"] == "delete":
             client.mark_delete(msg_id)
-        elif config['imap']['on_success'] == 'move':
-            client.move(msg_id, config['imap']['success'])
+        elif config["imap"]["on_success"] == "move":
+            client.move(msg_id, config["imap"]["success"])
         else:
             print("Nothing to do for message id {}".format(msg_id))
     except Exception as e:
-        if sentry_client:
-            sentry_client.captureException()
-        client.move(msg_id, config['imap']['error'])
+        sentry_sdk.capture_exception(e)
+        client.move(msg_id, config["imap"]["error"])
         print("Unable to parse or delivery msg", e)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
