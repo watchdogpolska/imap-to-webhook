@@ -21,6 +21,8 @@ jobs:
       with:
         python-version: "3.6"
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run:
+        pip install -U pip wheel
+        pip install -r requirements.txt
     - name: Test with pytest
       run: python test.py
