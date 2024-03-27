@@ -21,6 +21,8 @@ jobs:
         run: docker compose up -d daemon
       - name: Show actions user
         run: docker compose run daemon whoami
+      - name: Reown app directory
+        run: docker compose run daemon chown -R $(whoami) /usr/src/app
       - name: Show app directory
         run: docker compose run daemon ls -la
       - name: Shjow git repo ownerhip
