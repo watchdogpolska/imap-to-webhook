@@ -26,6 +26,7 @@ GZ_MIME = "application/gzip"
 EML_MIME = "message/rfc822"
 BINARY_MIME = "application/octet-stream"
 
+
 def get_text(mail):
     raw_content, html_content, plain_content, html_quote, plain_quote = (
         "",
@@ -168,8 +169,10 @@ def serialize_mail(raw_mail, compress_eml=False):
 
 
 if __name__ == "__main__":
-    import sys, pprint
-    with open(sys.argv[1], 'rb') as fp:
+    import pprint
+    import sys
+
+    with open(sys.argv[1], "rb") as fp:
         raw_mail = fp.read()
         mail = mailparser.parse_from_bytes(raw_mail)
         body = get_manifest(mail, False)
