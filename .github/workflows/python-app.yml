@@ -19,13 +19,17 @@ jobs:
         run: docker compose build daemon
       - name: Run app container
         run: docker compose up -d daemon
+
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v2.0.0
+      
       - name: Show actions user
         run: docker compose run daemon whoami
       - name: Reown app directory
         run: docker compose run daemon chown -R root:root /usr/src/app
       - name: Show app directory
         run: docker compose run daemon ls -la
-      - name: Shjow git repo ownerhip
+      - name: Show git repo ownerhip
         run: docker compose run daemon ls -la /usr/src/app/.git
       - name: Show git status
         run: docker compose run daemon git status
