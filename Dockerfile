@@ -3,6 +3,7 @@ LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 
 WORKDIR /usr/src/app
 COPY requirements.txt ./
+COPY requirements.dev.txt ./
 RUN apt-get update \
  && apt-get install -y --no-install-recommends g++ git make nano \
  && apt-get clean \
