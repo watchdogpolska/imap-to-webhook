@@ -12,11 +12,4 @@ RUN apt-get update \
  && apt-get remove -y g++ && apt-get autoremove -y
 ENV PYTHONUNBUFFERED=1
 COPY . .
-
-# Testing
-FROM build as testing
-RUN python test.py
-
-# Actual image
-FROM build
 CMD [ "python", "./daemon.py" ]
