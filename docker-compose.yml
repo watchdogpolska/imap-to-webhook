@@ -8,6 +8,8 @@ services:
       IMAP_URL: ${IMAP_URL}
       WEBHOOK_URL: http://mock:5000/
       ON_SUCCESSS: 'delete'
+    volumes:
+      - .:/usr/src/app
 
   mock:
     build:
