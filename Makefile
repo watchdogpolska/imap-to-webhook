@@ -18,3 +18,6 @@ lint: # lint currently staged files
 
 lint-all: # lint all files in repository
 	pre-commit run --all-files
+
+code-syle-check:
+	docker-compose run --rm make lint-all
