@@ -21,6 +21,8 @@ jobs:
         run: docker compose up -d daemon
       - name: Show app directory
         run: docker compose run daemon ls -la
+      - name: Add git safe directory
+        run: docker compose run daemon git config --global --add safe.directory /usr/src/app
       - name: Show git status
         run: docker compose run daemon git status
       - name: Ceck code style
