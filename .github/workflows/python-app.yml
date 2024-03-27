@@ -22,18 +22,18 @@ jobs:
 
       - name: Run pre-commit hooks
         uses: pre-commit/action@v2.0.0
-      
-      - name: Show actions user
-        run: docker compose run daemon whoami
-      - name: Reown app directory
-        run: docker compose run daemon chown -R root:root /usr/src/app
-      - name: Show app directory
-        run: docker compose run daemon ls -la
-      - name: Show git repo ownerhip
-        run: docker compose run daemon ls -la /usr/src/app/.git
-      - name: Show git status
-        run: docker compose run daemon git status
-      - name: Ceck code style
-        run: docker compose run daemon pre-commit run --all-files
+
+      # - name: Show actions user
+      #   run: docker compose run daemon whoami
+      # - name: Reown app directory
+      #   run: docker compose run daemon chown -R root:root /usr/src/app
+      # - name: Show app directory
+      #   run: docker compose run daemon ls -la
+      # - name: Show git repo ownerhip
+      #   run: docker compose run daemon ls -la /usr/src/app/.git
+      # - name: Show git status
+      #   run: docker compose run daemon git status
+      # - name: Ceck code style
+      #   run: docker compose run daemon pre-commit run --all-files
       - name: Run tests
         run: docker compose run daemon python test.py
