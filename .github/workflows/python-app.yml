@@ -18,6 +18,6 @@ jobs:
       - name: Build app container
         run: docker compose build daemon
       - name: Ceck code style
-        run: make lint-all
+        run: make code-syle-check
       - name: Run tests
         run: make test
