@@ -19,6 +19,8 @@ jobs:
         run: docker compose build daemon
       - name: Run app container
         run: docker compose up -d daemon
+      - name: Show actions user
+        run: docker compose run daemon whoami
       - name: Show app directory
         run: docker compose run daemon ls -la
       - name: Shjow git repo ownerhip
