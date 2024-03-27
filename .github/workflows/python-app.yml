@@ -21,7 +21,9 @@ jobs:
         run: docker compose up -d daemon
       - name: Show app directory
         run: docker compose run daemon ls -la
+      - name: Show git status
+        run: docker compose run daemon git status
       - name: Ceck code style
-        run: make code-syle-check
+        run: docker compose run daemon pre-commit run --all-files
       - name: Run tests
-        run: make test
+        run: docker compose run daemon python test.py
