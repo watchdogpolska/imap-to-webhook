@@ -47,7 +47,8 @@ def get_text(mail):
         plain_content = talon.quotations.extract_from_plain(raw_content)
         plain_quote = raw_content.replace(plain_content, "")
 
-    # 'content' item holds plain_content and 'quote' item holds plain_quote (with HTML stripped off).
+    # 'content' item holds plain_content and 'quote' item holds plain_quote
+    # (with HTML stripped off).
     # These names are used for backward compatibility.
     return {
         "html_content": html_content,
@@ -169,7 +170,6 @@ def serialize_mail(raw_mail, compress_eml=False):
 
 
 if __name__ == "__main__":
-    import pprint
     import sys
 
     with open(sys.argv[1], "rb") as fp:
