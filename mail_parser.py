@@ -26,6 +26,7 @@ GZ_MIME = "application/gzip"
 EML_MIME = "message/rfc822"
 BINARY_MIME = "application/octet-stream"
 
+
 def get_text(mail):
     raw_content, html_content, plain_content, html_quote, plain_quote = (
         "",
@@ -46,7 +47,8 @@ def get_text(mail):
         plain_content = talon.quotations.extract_from_plain(raw_content)
         plain_quote = raw_content.replace(plain_content, "")
 
-    # 'content' item holds plain_content and 'quote' item holds plain_quote (with HTML stripped off).
+    # 'content' item holds plain_content and 'quote' item holds plain_quote
+    # (with HTML stripped off).
     # These names are used for backward compatibility.
     return {
         "html_content": html_content,
@@ -168,8 +170,9 @@ def serialize_mail(raw_mail, compress_eml=False):
 
 
 if __name__ == "__main__":
-    import sys, pprint
-    with open(sys.argv[1], 'rb') as fp:
+    import sys
+
+    with open(sys.argv[1], "rb") as fp:
         raw_mail = fp.read()
         mail = mailparser.parse_from_bytes(raw_mail)
         body = get_manifest(mail, False)

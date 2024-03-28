@@ -1,17 +1,27 @@
+import copy
 import os
 import time
-from parser import serialize_mail
 
 import requests
 import sentry_sdk
 
 from config import get_config
 from connection import IMAPClient
+from mail_parser import serialize_mail
+from version import __version__
+
 
 def main():
     config = get_config(os.environ)
+    config_printout = copy.deepcopy(config)
+    if "password" in config_printout.get("imap", {}):
+        config_printout["imap"]["password"] = "********"
+        print("Configuration to print: ", config_printout)
+        print("Configuration: ", config)
+
     session = requests.Session()
-    print("Configuration: ", config)
+    print(f"Starting daemon version {__version__}")
+    print("Configuration: ", config_printout)
     sentry_sdk.init(dsn=config["sentry_dsn"], traces_sample_rate=1.0)
     if config["sentry_dsn"]:
         try:
@@ -51,7 +61,7 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
         body = serialize_mail(raw_mail, config["compress_eml"])
         end = time.time()
         print("Message serialized in {} seconds".format(end - start))
-        res = session.post(config['webhook'], files=body)
+        res = session.post(config["webhook"], files=body)
         print("Received response:", res.text)
         res.raise_for_status()
         response = res.json()

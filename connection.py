@@ -4,14 +4,14 @@ class IMAPClient:
         hostname = config["imap"]["hostname"]
         port = config["imap"]["port"]
         self.client = transport(host=hostname, port=port)
-        print("Connected to mail server")
         username = config["imap"]["username"]
         password = config["imap"]["password"]
+        print(f"Connecting to mail server: {hostname}")
         if username and password:
             login = self.client.login(username, password)
             if login[0] != "OK":
                 raise Exception("Unable to login", login)
-        print("Logged in")
+        print(f"Logged in as {username}")
         select_folder = self.client.select(config["imap"]["inbox"])
         if select_folder[0] != "OK":
             raise Exception("Unable to select folder", select_folder)
