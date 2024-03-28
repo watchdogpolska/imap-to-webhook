@@ -1,5 +1,5 @@
 ---
-name: Code pre-commit checks
+name: Code linters - pre-commit checks
 
 on:
   push:
