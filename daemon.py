@@ -16,8 +16,6 @@ def main():
     config_printout = copy.deepcopy(config)
     if "password" in config_printout.get("imap", {}):
         config_printout["imap"]["password"] = "********"
-        print("Configuration to print: ", config_printout)
-        print("Configuration: ", config)
 
     session = requests.Session()
     print(f"Starting daemon version {__version__}")
