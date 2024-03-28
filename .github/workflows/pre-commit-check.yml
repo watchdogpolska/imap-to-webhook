@@ -1,5 +1,5 @@
 ---
-name: Python application test
+name: Code pre-commit checks
 
 on:
   push:
