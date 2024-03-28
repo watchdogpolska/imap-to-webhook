@@ -1,5 +1,5 @@
 ---
-name: Python application
+name: Python application test
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
         run: docker compose build daemon
       - name: Run app container
         run: docker compose up -d daemon
-      - name: Run pre-commit hooks
-        uses: pre-commit/action@v2.0.0
+      # - name: Run pre-commit hooks
+      #   uses: pre-commit/action@v2.0.0
       - name: Run tests
         run: docker compose run daemon python test.py

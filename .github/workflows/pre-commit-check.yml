@@ -1,0 +1,17 @@
+---
+name: Code linters - pre-commit checks
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run pre-commit hooks
+        uses: pre-commit/action@v2.0.0
