@@ -8,8 +8,7 @@ import sentry_sdk
 from config import get_config
 from connection import IMAPClient
 from mail_parser import serialize_mail
-
-__version__ = "1.0.01"
+from version import __version__
 
 
 def main():
