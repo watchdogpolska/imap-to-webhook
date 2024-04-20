@@ -6,13 +6,13 @@ import quopri
 import re
 import uuid
 from io import BytesIO
+
 import mailparser
 from html2text import html2text
 
-from extract_raw_content.text import extract_from_plain
 from extract_raw_content.html import extract_from_html
+from extract_raw_content.text import extract_from_plain
 from extract_raw_content.utils import register_xpath_extensions
-
 
 decoder_map = {
     "base64": base64.b64decode,
