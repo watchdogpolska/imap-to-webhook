@@ -1,4 +1,5 @@
 import re
+
 from lxml.cssselect import CSSSelector
 
 CHECKPOINT_PREFIX = "#!%!"
