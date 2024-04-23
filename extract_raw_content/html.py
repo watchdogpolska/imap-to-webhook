@@ -1,7 +1,6 @@
+import re
 from copy import deepcopy
 
-import html5lib
-import re
 from lxml import html
 from lxml.cssselect import CSSSelector
 from lxml.html import html5parser
@@ -102,21 +101,6 @@ def mark_message_lines(lines):
     return "".join(markers)
 
 
-def _html5lib_parser():
-    """
-    html5lib is a pure-python library that conforms to the WHATWG HTML spec
-    and is not vulnarable to certain attacks common for XML libraries
-    """
-    return html5lib.HTMLParser(
-        # build lxml tree
-        html5lib.treebuilders.getTreeBuilder("lxml"),
-        # remove namespace value from inside lxml.html.html5paser element tag
-        # otherwise it yields something like "{http://www.w3.org/1999/xhtml}div"
-        # instead of "div", throwing the algo off
-        namespaceHTMLElements=False,
-    )
-
-
 def _rm_excessive_newlines(s):
     """Remove excessive newlines that often happen due to tons of divs"""
     return const._RE_EXCESSIVE_NEWLINES.sub("\n\n", s).strip()
@@ -140,8 +124,7 @@ def html_document_fromstring(s):
     try:
         if html_too_big(s):
             return None
-
-        return html5parser.document_fromstring(s, parser=_html5lib_parser())
+        return html5parser.document_fromstring(s, parser=utils._html5lib_parser())
     except Exception:
         pass
 
