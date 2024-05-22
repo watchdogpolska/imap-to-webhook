@@ -1,6 +1,6 @@
 html2text==2024.2.26
 mail-parser==3.15.0
-requests==2.31.0
+requests==2.32.2
 sentry-sdk==1.43.0
 ipdb==0.13.13
 html5lib==1.1
