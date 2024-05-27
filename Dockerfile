@@ -1,4 +1,4 @@
-FROM python:3.10-slim as build
+FROM python:3.12-slim as build
 LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 
 WORKDIR /usr/src/app
@@ -13,6 +13,7 @@ RUN apt-get update \
  && pip install --no-cache-dir -r requirements.dev.txt \
  && apt-get remove -y g++ && apt-get autoremove -y
 ENV PYTHONUNBUFFERED=1
+RUN git config --global --add safe.directory /usr/src/app
 COPY . .
 
 # Testing
