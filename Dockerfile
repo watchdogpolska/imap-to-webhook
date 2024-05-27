@@ -13,6 +13,7 @@ RUN apt-get update \
  && pip install --no-cache-dir -r requirements.dev.txt \
  && apt-get remove -y g++ && apt-get autoremove -y
 ENV PYTHONUNBUFFERED=1
+RUN git config --global --add safe.directory /usr/src/app
 COPY . .
 
 # Testing
