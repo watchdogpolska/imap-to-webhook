@@ -8,10 +8,11 @@ import uuid
 from io import BytesIO
 
 import mailparser
-import talon
 from html2text import html2text
 
-talon.init()
+from extract_raw_content.html import extract_from_html
+from extract_raw_content.text import extract_from_plain
+from extract_raw_content.utils import register_xpath_extensions
 
 decoder_map = {
     "base64": base64.b64decode,
@@ -26,6 +27,8 @@ GZ_MIME = "application/gzip"
 EML_MIME = "message/rfc822"
 BINARY_MIME = "application/octet-stream"
 
+register_xpath_extensions()
+
 
 def get_text(mail):
     raw_content, html_content, plain_content, html_quote, plain_quote = (
@@ -38,13 +41,13 @@ def get_text(mail):
 
     if mail.text_html:
         raw_content = "".join(mail.text_html).replace("\r\n", "\n")
-        html_content = talon.quotations.extract_from_html(raw_content)
+        html_content = extract_from_html(raw_content)
         html_quote = raw_content.replace(html_content, "")
         plain_content = html2text(html_content)
 
     if mail.text_plain or not plain_content:
         raw_content = "".join(mail.text_plain)
-        plain_content = talon.quotations.extract_from_plain(raw_content)
+        plain_content = extract_from_plain(raw_content)
         plain_quote = raw_content.replace(plain_content, "")
 
     # 'content' item holds plain_content and 'quote' item holds plain_quote
