@@ -1,4 +1,4 @@
-html2text==2024.2.26
+html2text==2025.4.15
 mail-parser==4.1.4
 requests==2.32.3
 sentry-sdk==2.32.0
