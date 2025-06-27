@@ -5,6 +5,23 @@ import unittest
 from unittest.mock import Mock, patch
 
 from extract_raw_content import constants, html, text, utils
+
+# ---------------------------------------------------------------------
+# Compatibility layer for the new (clean_html, quote_html) API introduced in
+# fix_quotes_and_encoding.  The existing tests expect the *clean* body
+# only, so we wrap the function to return element 0 of the tuple.
+# ---------------------------------------------------------------------
+_orig_extract = html.extract_from_html
+
+
+def _extract_clean(body):
+    """Return only the cleaned HTML body (discard quotation)."""
+    return _orig_extract(body)[0]
+
+
+html.extract_from_html = _extract_clean
+# ---------------------------------------------------------------------
+
 from mail_parser import serialize_mail
 
 STANDARD_REPLIES = "mails/standard_replies"
