@@ -41,8 +41,7 @@ def get_text(mail):
 
     if mail.text_html:
         raw_content = "".join(mail.text_html).replace("\r\n", "\n")
-        html_content = extract_from_html(raw_content)
-        html_quote = raw_content.replace(html_content, "")
+        html_content, html_quote = extract_from_html(raw_content)
         plain_content = html2text(html_content)
 
     if mail.text_plain or not plain_content:

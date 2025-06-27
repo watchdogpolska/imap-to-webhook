@@ -177,15 +177,23 @@ def _extract_from_html(msg_body):
     then extracting quotations from text,
     then checking deleted checkpoints,
     then deleting necessary tags.
+
+    function returns two values:
+        clean_html, quote_html = _extract_from_html(body)
+
+    Both values are Unicode strings; quote_html is an empty string when
+    no quotation is detected.
     """
     if msg_body.strip() == b"":
-        return msg_body
+        empty = msg_body.decode("utf8") if isinstance(msg_body, bytes) else msg_body
+        return empty, ""
 
     msg_body = msg_body.replace(b"\r\n", b"\n")
     html_tree = html_document_fromstring(msg_body)
-
     if html_tree is None:
-        return msg_body
+        fallback = msg_body.decode("utf8") if isinstance(msg_body, bytes) else msg_body
+        return fallback, ""
+
     cut_quotations = (
         html_quotations.cut_gmail_quote(html_tree)
         or html_quotations.cut_zimbra_quote(html_tree)
@@ -194,7 +202,10 @@ def _extract_from_html(msg_body):
         or html_quotations.cut_by_id(html_tree)
         or html_quotations.cut_from_block(html_tree)
     )
-    html_tree_copy = deepcopy(html_tree)
+
+    # TWO working copies: one for the body, one for the quote
+    html_tree_body = deepcopy(html_tree)  # -> cleaned message
+    html_tree_quote = deepcopy(html_tree)  # -> quoted part only
 
     number_of_checkpoints = html_quotations.add_checkpoint(html_tree, 0)
     quotation_checkpoints = [False] * number_of_checkpoints
@@ -203,7 +214,8 @@ def _extract_from_html(msg_body):
     lines = plain_text.splitlines()
     # Don't process too long messages
     if len(lines) > const.MAX_LINES_COUNT:
-        return msg_body
+        original = msg_body.decode("utf8") if isinstance(msg_body, bytes) else msg_body
+        return original, ""
     # Collect checkpoints on each line
     line_checkpoints = [
         [
@@ -221,44 +233,55 @@ def _extract_from_html(msg_body):
     process_marked_lines(lines, markers, return_flags)
     lines_were_deleted, first_deleted, last_deleted = return_flags
 
-    if not lines_were_deleted and not cut_quotations:
-        return msg_body
+    if not lines_were_deleted and not cut_quotations:  # nothing to cut
+        original = msg_body.decode("utf8") if isinstance(msg_body, bytes) else msg_body
+        return original, ""
+
+    # collect checkpoints that belong to quotation
     if lines_were_deleted:
-        # collect checkpoints from deleted lines
         for i in range(first_deleted, last_deleted):
             for checkpoint in line_checkpoints[i]:
                 quotation_checkpoints[checkpoint] = True
-        # Remove tags with quotation checkpoints
-        html_quotations.delete_quotation_tags(html_tree_copy, 0, quotation_checkpoints)
-    if _readable_text_empty(html_tree_copy):
-        return msg_body
-    return html.tostring(html_tree_copy)
+
+    # --- build the two trees ---------------------------------------------
+    # 1. message without quotation
+    html_quotations.delete_quotation_tags(html_tree_body, 0, quotation_checkpoints)
+
+    # 2. quotation only  – delete the *other* checkpoints
+    inverted = [not c for c in quotation_checkpoints]
+    html_quotations.delete_quotation_tags(html_tree_quote, 0, inverted)
+
+    # guard against corner cases where everything vanished
+    if _readable_text_empty(html_tree_body):
+        original = msg_body.decode("utf8") if isinstance(msg_body, bytes) else msg_body
+        return original, ""
+
+    clean_html = html.tostring(html_tree_body, encoding="unicode")
+    quote_html = (
+        ""
+        if _readable_text_empty(html_tree_quote)
+        else html.tostring(html_tree_quote, encoding="unicode")
+    )
+
+    return clean_html, quote_html
 
 
 def extract_from_html(msg_body):
     """
-    Extract not quoted message from provided html message body
+    Extract not quoted message  and quote from provided html message body
     using tags and plain text algorithm.
 
-    Cut out the 'blockquote', 'gmail_quote' tags.
-    Cut Microsoft quotations.
+    function returns two values:
+        clean_html, quote_html = extract_from_html(body)
 
-    Then use plain text algorithm to cut out splitter or
-    leftover quotation.
-    This works by adding checkpoint text to all html tags,
-    then converting html to text,
-    then extracting quotations from text,
-    then checking deleted checkpoints,
-    then deleting necessary tags.
-
-    Returns a unicode string.
+    Both values are Unicode strings; quote_html is an empty string when
+    no quotation is detected.
     """
-    if isinstance(msg_body, str):
-        msg_body = msg_body.encode("utf8")
-    elif not isinstance(msg_body, bytes):
-        msg_body = msg_body.encode("ascii")
+    clean_html, quote_html = _extract_from_html(msg_body)
 
-    result = _extract_from_html(msg_body)
-    if isinstance(result, bytes):
-        result = result.decode("utf8")
-    return result
+    if isinstance(clean_html, bytes):
+        clean_html = clean_html.decode("utf8")
+    if isinstance(quote_html, bytes):
+        quote_html = quote_html.decode("utf8")
+
+    return clean_html, quote_html
