@@ -17,6 +17,9 @@ _orig_extract = html.extract_from_html
 
 def _extract_clean(body):
     """Return only the cleaned HTML body (discard quotation)."""
+    # New: tests pass a str, production passes bytes – normalise to bytes
+    if isinstance(body, str):
+        body = body.encode("utf-8")
     return _orig_extract(body)[0]
 
 
