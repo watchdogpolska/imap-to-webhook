@@ -232,7 +232,7 @@ def _extract_from_html(msg_body):
         html_quotations.delete_quotation_tags(html_tree_copy, 0, quotation_checkpoints)
     if _readable_text_empty(html_tree_copy):
         return msg_body
-    return html.tostring(html_tree_copy)
+    return html.tostring(html_tree_copy, encoding="unicode")
 
 
 def extract_from_html(msg_body):
