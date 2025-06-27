@@ -5,6 +5,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from extract_raw_content import constants, html, text, utils
+from mail_parser import serialize_mail
 
 # ---------------------------------------------------------------------
 # Compatibility layer for the new (clean_html, quote_html) API introduced in
@@ -22,7 +23,6 @@ def _extract_clean(body):
 html.extract_from_html = _extract_clean
 # ---------------------------------------------------------------------
 
-from mail_parser import serialize_mail
 
 STANDARD_REPLIES = "mails/standard_replies"
 RE_WHITESPACE = re.compile(r"\s")
