@@ -10,9 +10,13 @@ from io import BytesIO
 import mailparser
 from html2text import html2text
 
-from extract_raw_content.html import extract_from_html
-from extract_raw_content.text import extract_from_plain
-from extract_raw_content.utils import register_xpath_extensions
+from extract_raw_content.html import strip_email_quote
+from extract_raw_content.text import (
+    exctract_quoted_from_plain,
+    extract_non_quoted_from_plain,
+)
+
+# from extract_raw_content.utils import register_xpath_extensions
 
 decoder_map = {
     "base64": base64.b64decode,
@@ -27,7 +31,7 @@ GZ_MIME = "application/gzip"
 EML_MIME = "message/rfc822"
 BINARY_MIME = "application/octet-stream"
 
-register_xpath_extensions()
+# register_xpath_extensions()
 
 
 def get_text(mail):
@@ -41,13 +45,14 @@ def get_text(mail):
 
     if mail.text_html:
         raw_content = "".join(mail.text_html).replace("\r\n", "\n")
-        html_content, html_quote = extract_from_html(raw_content)
+        html_content, html_quote = strip_email_quote(raw_content)
+        # extract_from_html(raw_content)
         plain_content = html2text(html_content)
 
     if mail.text_plain or not plain_content:
         raw_content = "".join(mail.text_plain)
-        plain_content = extract_from_plain(raw_content)
-        plain_quote = raw_content.replace(plain_content, "")
+        plain_content = extract_non_quoted_from_plain(raw_content)
+        plain_quote = exctract_quoted_from_plain(raw_content, plain_content)
 
     # 'content' item holds plain_content and 'quote' item holds plain_quote
     # (with HTML stripped off).

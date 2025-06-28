@@ -117,7 +117,7 @@ def postprocess(msg_body):
     return re.sub(const.RE_NORMALIZED_LINK, r"<\1>", msg_body).strip()
 
 
-def extract_from_plain(msg_body):
+def extract_non_quoted_from_plain(msg_body):
     """Extracts a non quoted message from provided plain text."""
     delimiter = get_delimiter(msg_body)
     msg_body = utils.preprocess(msg_body, delimiter)
@@ -130,3 +130,12 @@ def extract_from_plain(msg_body):
     msg_body = delimiter.join(lines)
     msg_body = postprocess(msg_body)
     return msg_body
+
+
+def exctract_quoted_from_plain(msg_body, non_quoted=""):
+    """Extracts a quoted message from provided plain text."""
+    non_quoted_lines = non_quoted.splitlines()
+    for line in non_quoted_lines:
+        if line.strip():
+            msg_body = msg_body.replace(line, "", 1)
+    return msg_body.strip()
