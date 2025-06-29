@@ -1,4 +1,4 @@
-FROM python:3.12-slim as build
+FROM python:3.12-slim AS build
 LABEL maintainer="adam.dobrawy{at}siecobywatelska.pl"
 
 WORKDIR /usr/src/app
@@ -17,7 +17,7 @@ RUN git config --global --add safe.directory /usr/src/app
 COPY . .
 
 # Testing
-FROM build as testing
+FROM build AS testing
 RUN python test.py
 
 # Actual image
