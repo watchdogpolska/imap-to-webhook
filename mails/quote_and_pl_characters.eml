@@ -1,0 +1,201 @@
+Return-Path: <sender@siecobywatelska.pl>
+Delivered-To: main@staging.fedrowanie.siecobywatelska.pl
+Received: from mail42.zenbox.pl ([10.0.5.95])
+	by storage-s7.zenbox.pl with LMTP
+	id wFIcDZTcXmgUTQAARGl0Kw:P1
+	(envelope-from <sender@siecobywatelska.pl>)
+	for <main@staging.fedrowanie.siecobywatelska.pl>; Fri, 27 Jun 2025 20:01:56 +0200
+Received: from mail42.zenbox.pl
+	by mail42.zenbox.pl with LMTP
+	id wFIcDZTcXmgUTQAARGl0Kw
+	(envelope-from <sender@siecobywatelska.pl>)
+	for <main@staging.fedrowanie.siecobywatelska.pl>; Fri, 27 Jun 2025 20:01:56 +0200
+Received: from mail42.zenbox.pl (localhost [127.0.0.1])
+	by mail42.zenbox.pl (Postfix) with ESMTP id 33CFC42ACA06
+	for <main@staging.fedrowanie.siecobywatelska.pl>; Fri, 27 Jun 2025 20:01:56 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mail42.zenbox.pl
+Authentication-Results: mail42.zenbox.pl (amavisd-new);
+ dkim=pass (2048-bit key) header.d=siecobywatelska.pl
+Received: from mail42.zenbox.pl ([127.0.0.1])
+ by mail42.zenbox.pl (mail42.zenbox.pl [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NvXrAECLaHEt for <main@staging.fedrowanie.siecobywatelska.pl>;
+ Fri, 27 Jun 2025 20:01:55 +0200 (CEST)
+Received-SPF: Pass (sender SPF authorized) identity=mailfrom; client-ip=209.85.166.46; helo=mail-io1-f46.google.com; envelope-from=sender@siecobywatelska.pl; receiver=sprawa-52116@staging.fedrowanie.siecobywatelska.pl 
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail42.zenbox.pl (Postfix) with ESMTPS id E3F2C42ACA04
+	for <sprawa-52116@staging.fedrowanie.siecobywatelska.pl>; Fri, 27 Jun 2025 20:01:54 +0200 (CEST)
+Received: by mail-io1-f46.google.com with SMTP id ca18e2360f4ac-86d013c5e79so6746839f.0
+        for <sprawa-52116@staging.fedrowanie.siecobywatelska.pl>; Fri, 27 Jun 2025 11:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=siecobywatelska.pl; s=google; t=1751047313; x=1751652113; darn=staging.fedrowanie.siecobywatelska.pl;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vhpgulHL0y8iot1tIhqZcz8AMCgjqD19Jgap/AWLwkc=;
+        b=QOI+ysAqTnw0gZ1iZxo30raYeVmtt3ZiGsERtGSO4nX4280oYb0nMXQAbgFeMIM5E3
+         FKP5EV9jXPvmTImzKiArdfZa1FyWusVvdZz8CXAT7/6UY2/DXadfxd7YVeZMU4ixNjfo
+         5MJk3M+I66fIWaQ2511l8Cz0qUeNSoXC3BVCEGnnq/sBF/PE50Ef7yw5SrRIKn8HNRDk
+         thBZxXnAMtaxaQObFURBxP/TRXpWHfTgGnTE2lQd10jy/wpe3i9R3E3kXWtolFGPaJXb
+         /Z94tzj/rJ1usKih7y4rWtw1IoS3k+N43MIkSqtt5jkyHx7OkuyQQwscWbwA7vBxyC2s
+         06UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751047313; x=1751652113;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vhpgulHL0y8iot1tIhqZcz8AMCgjqD19Jgap/AWLwkc=;
+        b=QAy0E5yB8MLj5WMwvLmmAXwbUXK49pAV3AFfQQzF8bi/UB4WolD2AKiHvwzdfanb5c
+         95m8ycTNfC/3URHO/qq8+dPKitz5wJQacADML9GlPbbZnUHpipWh/K+4rd+7iYSR4YMm
+         rJUKKAHyQ5/qE7YwKSmEXBAyLqPzI3oenagt1NYL5dzYZ0t+M+87bxbshkte8UTlqc3o
+         vfZ4BlRywJxCKEVQvncMJiLLrBPIweFm7CQfwwbbWZtJ+eAN/4wJvalQDooYiHAevLtf
+         XMpNC+ajVhORWlzUGgZtCwoVq9cXAd+dFz3/MxSMQde9iW/pDoMXVegr4M5h8D4+3cuX
+         01rw==
+X-Gm-Message-State: AOJu0YxTrUW4Ik5ymsueUa5wrsfX4qdabFmEPrTrbhQlYqRmY3nj3twJ
+	MGmVcpVrB3BIqMcNjxe398UAUOq4sxn5UCSpcjcShMYqWR4pYrX6rgm0sSGbPnC6VK+g3ItJK3j
+	1CDyicpY956GG0//sr98eAn5pbHErj49qM2oJkPiUvPGV2BoPnw4RB7w=
+X-Gm-Gg: ASbGncuRJRfAWo8+nhItMucOyEAF6NdkICcn+T1Pfr9QJg9cPXJOEEbFLVXFr17/c2f
+	sPRxuIcdTqAVHQW4aVsnqFDxN18zx0U/lm8jDtjmgPhVjPj+QMAns1VU6onvLXWtlB6ff5jiHvj
+	1EzbvFqk04XSREAU1JfNiu6963LuZUngaYQZ7cHXZ0sw==
+X-Google-Smtp-Source: AGHT+IEazPMdC4xCTRWmC8teFRZkaICPZZw2Dr6lW0enVYV/cYpvMS3mG0rN9JP7X6TtT+EA4DEnzjZzuOJn+f4do9c=
+X-Received: by 2002:a05:6e02:8e:b0:3dd:b706:b7d3 with SMTP id
+ e9e14a558f8ab-3df4ab6b6a9mr64520715ab.7.1751047312683; Fri, 27 Jun 2025
+ 11:01:52 -0700 (PDT)
+MIME-Version: 1.0
+References: <175100963405.203.15942825174867013494@staging.fedrowanie.siecobywatelska.pl>
+In-Reply-To: <175100963405.203.15942825174867013494@staging.fedrowanie.siecobywatelska.pl>
+From: =?UTF-8?Q?Sender?= <sender@siecobywatelska.pl>
+Date: Fri, 27 Jun 2025 20:01:42 +0200
+X-Gm-Features: Ac12FXx3L_HC0picKAeMnZTg0BiAsPWZfMnRambVZKXWgL7bM-1ZUo8ysql3m2Q
+Message-ID: <CADJeSLhf9JnbZvK8065Fd2bYZUrBFDH6u_vQuh1xm7Ep90x4VA@mail.gmail.com>
+Subject: =?UTF-8?B?UmU6IFRlc3QgT0NSIHphxYLEhWN6bmlrw7N3?=
+To: sprawa-52116@staging.fedrowanie.siecobywatelska.pl
+Content-Type: multipart/alternative; boundary="0000000000000ec89506389179ea"
+
+--0000000000000ec89506389179ea
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Odpowied=C5=BA z polskimi znakami:
+=C4=84=C4=85 C=C4=87 E=C4=99 =C5=83=C5=84 =C5=81=C5=82 =C5=BB=C5=BC =C5=B9=
+=C5=BA
+
+Bez za=C5=82=C4=85cznika za to z emotikonakami:
+=F0=9F=91=8D=F0=9F=98=89=F0=9F=AB=A1=F0=9F=98=83=F0=9F=A4=94=F0=9F=A4=A3
+
+Pozdrawiamy
+
+pt., 27 cze 2025 o 09:36 Watchdog Polska <
+sprawa-52116@staging.fedrowanie.siecobywatelska.pl> napisa=C5=82(a):
+
+> Prosze o przes=C5=82anie za=C5=82=C4=85cznikow do konwersji na tekst.
+>
+> Prosimy o odpowied=C5=BA na adres
+> sprawa-52116@staging.fedrowanie.siecobywatelska.pl
+> --
+>
+> Zesp=C3=B3=C5=82 developerski SO
+>
+>
+
+--=20
+*Pozdrawiam *
+*Sender*
+
+*Sie=C4=87 Obywatelska Watchdog Polska*
+ul. Ursynowska 22/2 | 02-605 Warszawa
+tel: +48 22 844 73 55
+
+KRS: 0000181348
+NIP: 526 284 28 72
+*Numer konta do wp=C5=82at darowizn:*
+*29 2130 0004 2001 0343 2101 0001*
+
+*Przetwarzamy Twoje dane osobowe. Administratorem Twoich danych osobowych
+jest Sie=C4=87 Obywatelska Watchdog Polska z siedzib=C4=85 w Warszawie, ul.
+Ursynowska 22/2, 02-605 Warszawa. Wyznaczyli=C5=9Bmy inspektora ochrony dan=
+ych,
+z kt=C3=B3rym mo=C5=BCesz skontaktowa=C4=87 si=C4=99 pod adresem e-mail: io=
+d@siecobywatelska.pl
+<iod@siecobywatelska.pl>. Twoje dane osobowe przetwarzamy w celu
+prowadzenia z Tob=C4=85 korespondencji, w tym rozwi=C4=85zania zg=C5=82oszo=
+nego przez
+Ciebie problemu. Podstaw=C4=85 prawn=C4=85 przetwarzania jest art. 6 ust. 1=
+ lit. f
+RODO. Szczeg=C3=B3=C5=82owe informacje o przetwarzaniu przez nas Twoich dan=
+ych
+osobowych znajdziesz w klauzulach informacyjnych
+<https://bip.siecobywatelska.pl/index.php?id=3D1103>.*
+
+--0000000000000ec89506389179ea
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Odpowied=C5=BA z polskimi=C2=A0znakami:<br></div><div=
+>=C4=84=C4=85 C=C4=87=C2=A0E=C4=99=C2=A0=C5=83=C5=84 =C5=81=C5=82 =C5=BB=C5=
+=BC =C5=B9=C5=BA<br><br></div><div>Bez za=C5=82=C4=85cznika za to z emotiko=
+nakami:<br>=F0=9F=91=8D=F0=9F=98=89=F0=9F=AB=A1=F0=9F=98=83=F0=9F=A4=94=F0=
+=9F=A4=A3<br><br></div><div>Pozdrawiamy</div><br><div class=3D"gmail_quote =
+gmail_quote_container"><div dir=3D"ltr" class=3D"gmail_attr">pt., 27 cze 20=
+25 o 09:36=C2=A0Watchdog Polska &lt;<a href=3D"mailto:sprawa-52116@staging.=
+fedrowanie.siecobywatelska.pl">sprawa-52116@staging.fedrowanie.siecobywatel=
+ska.pl</a>&gt; napisa=C5=82(a):<br></div><blockquote class=3D"gmail_quote" =
+style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pa=
+dding-left:1ex">
+
+
+<p>Prosze o przes=C5=82anie za=C5=82=C4=85cznikow do konwersji na tekst.</p=
+>
+<p>Prosimy o odpowied=C5=BA na adres <a href=3D"mailto:sprawa-52116@staging=
+.fedrowanie.siecobywatelska.pl" target=3D"_blank">sprawa-52116@staging.fedr=
+owanie.siecobywatelska.pl</a></p>
+
+    --<br>
+    <p>Zesp=C3=B3=C5=82 developerski SO</p>
+
+
+
+
+
+
+<blockquote></blockquote>
+</blockquote></div><div><br clear=3D"all"></div><br><span class=3D"gmail_si=
+gnature_prefix">-- </span><br><div dir=3D"ltr" class=3D"gmail_signature"><d=
+iv dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div style=3D"color:rgb(34=
+,34,34)"><b><span style=3D"color:rgb(0,0,0);font-family:monospace">Pozdrawi=
+am=C2=A0</span></b></div><div style=3D"color:rgb(34,34,34)"><b><span style=
+=3D"color:rgb(0,0,0);font-family:monospace">Sender</span></b></=
+div><div style=3D"color:rgb(34,34,34)"><b><span style=3D"color:rgb(0,0,0);f=
+ont-family:monospace"><img src=3D"https://ci3.googleusercontent.com/mail-si=
+g/AIorK4x92-FKLnWHMq_kbK6COjfxf98fIzSlddLYe1LOZ0r1jN4ULTj_2MWAEcU-00-dTEF0G=
+cSphf5IjRLx"><br></span></b></div><div style=3D"color:rgb(34,34,34)"><b><sp=
+an style=3D"color:rgb(0,0,0);font-family:monospace">Sie=C4=87 Obywatelska W=
+atchdog Polska</span></b></div><div style=3D"color:rgb(34,34,34)"><span sty=
+le=3D"color:rgb(0,0,0);font-family:monospace"></span></div><div style=3D"co=
+lor:rgb(34,34,34)"><span style=3D"color:rgb(0,0,0);font-family:monospace"><=
+/span></div><span style=3D"color:rgb(0,0,0);font-family:monospace">ul. Ursy=
+nowska 22/2 | 02-605 Warszawa</span><div dir=3D"ltr" style=3D"color:rgb(34,=
+34,34)"><table><tbody><tr><td valign=3D"middle" style=3D"color:rgb(0,0,0);f=
+ont-family:monospace">tel: +48 22 844 73 55<br><br>KRS: 0000181348<br>NIP: =
+526 284 28 72</td></tr></tbody></table><br></div><div dir=3D"ltr" style=3D"=
+color:rgb(34,34,34)"><div dir=3D"ltr"><font face=3D"monospace"><b>Numer kon=
+ta do wp=C5=82at darowizn:</b></font></div><div dir=3D"ltr"><font face=3D"m=
+onospace"><b>29 2130 0004 2001 0343 2101 0001</b></font></div></div><div di=
+r=3D"ltr" style=3D"color:rgb(34,34,34)"><font face=3D"monospace" size=3D"1"=
+><i><b><br></b></i></font></div><div dir=3D"ltr" style=3D"color:rgb(34,34,3=
+4)"><font face=3D"monospace" size=3D"1"><i><b>Przetwarzamy Twoje dane osobo=
+we. </b>Administratorem Twoich danych osobowych jest Sie=C4=87 Obywatelska =
+Watchdog Polska z siedzib=C4=85 w Warszawie, ul. Ursynowska 22/2, 02-605 Wa=
+rszawa. Wyznaczyli=C5=9Bmy inspektora ochrony danych, z kt=C3=B3rym mo=C5=
+=BCesz skontaktowa=C4=87 si=C4=99 pod adresem e-mail:=C2=A0<a href=3D"mailt=
+o:iod@siecobywatelska.pl" target=3D"_blank">iod@siecobywatelska.pl</a>. Two=
+je dane osobowe przetwarzamy w celu prowadzenia z Tob=C4=85 korespondencji,=
+ w tym rozwi=C4=85zania zg=C5=82oszonego przez Ciebie problemu. Podstaw=C4=
+=85 prawn=C4=85 przetwarzania jest art. 6 ust. 1 lit. f RODO. Szczeg=C3=B3=
+=C5=82owe informacje o przetwarzaniu przez nas Twoich danych osobowych znaj=
+dziesz <a href=3D"https://bip.siecobywatelska.pl/index.php?id=3D1103" targe=
+t=3D"_blank">w klauzulach informacyjnych</a>.</i></font><br></div><div dir=
+=3D"ltr" style=3D"color:rgb(34,34,34)"><br></div></div></div><table><tbody>=
+<tr><td style=3D"color:rgb(0,0,0);font-family:monospace" valign=3D"middle">=
+<br></td></tr></tbody></table></div></div></div>
+
+--0000000000000ec89506389179ea--
