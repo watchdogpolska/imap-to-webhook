@@ -10,9 +10,17 @@ services:
       ON_SUCCESSS: 'delete'
     volumes:
       - .:/usr/src/app
+    networks:
+      - imap-to-webhook-network
 
   mock:
     build:
       context: mock
     ports:
       - 5000:5000
+    networks:
+      - imap-to-webhook-network
+
+networks:
+  imap-to-webhook-network:
+    driver: bridge
