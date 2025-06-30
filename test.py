@@ -441,6 +441,10 @@ Reply
                 RE_WHITESPACE.sub("", "Hi. I am fine.\n\nThanks,\nAlex"),
                 RE_WHITESPACE.sub("", plain_reply),
             )
+            self.assertNotIn(
+                RE_WHITESPACE.sub("", "Hello! How are you?"),
+                RE_WHITESPACE.sub("", plain_reply),
+            )
 
     def test_CRLF(self):
         """CR is not converted to '&#13;'"""

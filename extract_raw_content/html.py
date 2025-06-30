@@ -297,6 +297,7 @@ def strip_email_quote(msg_body) -> Tuple[str, str]:
     extracted_parts: list[str] = []
 
     # -- 0 · Cut at first <hr> (if present) ---------------------------------
+    _preprocess_outlook(soup)  # Outlook-specific normalisations
     _harvest_from_first_hr(soup, extracted_parts)
 
     # -- 1 · Strip classic “Original message …” comment blocks ---------------
@@ -349,6 +350,85 @@ def looks_like_quote(tag: Tag) -> bool:  # now top-level
         return True
     style = (tag.get("style") or "").replace(" ", "").lower()
     return bool(re.search(r"border-left[^:]*:\s*\d+px", style))
+
+
+def _preprocess_outlook(soup: BeautifulSoup) -> None:
+    """
+    Make old and new Outlook HTML easy for `_harvest_from_first_hr`:
+      • lower-case every class/id,
+      • if we see the grey divider (`border-top:`) *and* it contains
+        header keywords → drop a real `<hr>` before it,
+      • else: find the first paragraph that *looks* like the Outlook
+        header (From/Sent/To/Subject in EN/PL/RU) and drop `<hr>` before
+        that.
+    """
+
+    hr = soup.find("hr")
+    if hr:
+        return
+
+    # 1 – lower-case class/id
+    for tag in soup.find_all(True):
+        if tag.has_attr("class"):
+            tag["class"] = [cls.lower() for cls in tag["class"]]
+        if tag.has_attr("id"):
+            tag["id"] = tag["id"].lower()
+
+    # ------------------------------------------------------------------
+    #  localisation: header keywords we accept as “the quoted part starts
+    #  here”.  Lower-case because we lowercase the text before matching.
+    # ------------------------------------------------------------------
+    HDR_WORDS = {
+        # English
+        "from:",
+        "sent:",
+        "to:",
+        "cc:",
+        "subject:",
+        # Polish
+        "od:",
+        "wysłano:",
+        "do:",
+        "dw:",
+        "temat:",
+        # Russian
+        "от:",
+        "отправлено:",
+        "кому:",
+        "копия:",
+        "тема:",
+    }
+
+    # ..................................................................
+    #  2a · Try modern Outlook: <div style="border-top:…">
+    # ..................................................................
+    def is_divider(tag: Tag) -> bool:
+        if tag.name not in {"div", "p"} or not tag.has_attr("style"):
+            return False
+        st = tag["style"].lower()
+        if "border-top:" not in st:
+            return False
+        if not re.search(r"border-top:[^;]*\d+(?:px|pt|em)", st):
+            return False
+        return any(w in tag.get_text(" ", strip=True).lower() for w in HDR_WORDS)
+
+    for divider in soup.find_all(is_divider):
+        divider.insert_before(soup.new_tag("hr"))
+        return
+
+    # ..................................................................
+    #  2b · Fallback for *old* Outlook – no grey line, but a header para
+    # ..................................................................
+    def is_header_para(tag: Tag) -> bool:
+        if tag.name not in {"p", "div"}:
+            return False
+        text = tag.get_text(" ", strip=True).lower()
+        # must start with a header keyword to avoid false positives
+        return any(text.startswith(w) for w in HDR_WORDS)
+
+    header = soup.find(is_header_para)
+    if header is not None:
+        header.insert_before(soup.new_tag("hr"))
 
 
 def _harvest_from_first_hr(soup: BeautifulSoup, bucket: list[str]) -> None:
