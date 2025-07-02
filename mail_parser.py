@@ -5,6 +5,8 @@ import json
 import quopri
 import re
 import uuid
+from email import policy
+from email.parser import BytesParser
 from io import BytesIO
 
 import mailparser
@@ -151,8 +153,52 @@ def get_manifest(mail, compress_eml):
     }
 
 
+def parse_mail_from_bytes(raw_bytes):
+    """
+    Patch for mailparser bug.
+    Return a MailParser.MailParser object whose UTF-8 text parts are always
+    decoded correctly, even when the original message uses 7bit/8bit CTE.
+    """
+    mp = mailparser.parse_from_bytes(raw_bytes)
+
+    # Fast-exit if the message never uses 7bit/8bit encodings
+    _CTE_78BIT_RE = re.compile(rb"^Content-Transfer-Encoding:\s*[78]bit\b", re.I | re.M)
+    if not _CTE_78BIT_RE.search(raw_bytes):
+        return mp
+
+    # Re-parse with the std-lib email package
+    msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
+
+    plain_parts, html_parts, other_text_parts = [], [], []
+    for part in msg.walk():
+        if part.is_multipart():
+            continue
+        if part.get_content_maintype() != "text":
+            continue
+
+        txt = part.get_content()
+        ctype = part.get_content_type()
+        if ctype == "text/plain":
+            plain_parts.append(txt)
+        elif ctype == "text/html":
+            html_parts.append(txt)
+        else:
+            other_text_parts.append(txt)
+
+    # Patch MailParser’s internal lists
+    mp._text_plain = plain_parts
+    mp._text_html = html_parts
+    mp._text_not_managed = other_text_parts
+
+    # Invalidate the cached body so the property recomputes on demand
+    if hasattr(mp, "_body"):
+        mp._body = None
+
+    return mp
+
+
 def serialize_mail(raw_mail, compress_eml=False):
-    mail = mailparser.parse_from_bytes(raw_mail)
+    mail = parse_mail_from_bytes(raw_mail)
     files = []
     # Build manifest
     body = get_manifest(mail, compress_eml)
@@ -181,6 +227,6 @@ if __name__ == "__main__":
 
     with open(sys.argv[1], "rb") as fp:
         raw_mail = fp.read()
-        mail = mailparser.parse_from_bytes(raw_mail)
+        mail = parse_mail_from_bytes(raw_mail)
         body = get_manifest(mail, False)
         json.dump(body, sys.stdout, indent=4)
