@@ -4,11 +4,10 @@ import re
 import unittest
 from unittest.mock import patch
 
-import mailparser
 from html2text import html2text
 
 from extract_raw_content import constants, html, text, utils
-from mail_parser import get_text, serialize_mail
+from mail_parser import get_text, parse_mail_from_bytes, serialize_mail
 
 # ---------------------------------------------------------------------
 # Compatibility layer for the new (clean_html, quote_html) API introduced in
@@ -1297,7 +1296,7 @@ that this line is intact."""
             * quotation     – moved to *.plain_quote / .html_quote*
         """
         raw_bytes = get_email_as_bytes("quote_and_pl_characters.eml")
-        mail = mailparser.parse_from_bytes(raw_bytes)
+        mail = parse_mail_from_bytes(raw_bytes)
         parts = get_text(mail)
         plain = parts["content"]
         self.assertRegex(
@@ -1336,7 +1335,27 @@ that this line is intact."""
             "Quoted text not detected in plain_quote",
         )
 
+    def test_8bit_text_html(self):
+        """
+        Test that 8-bit text in HTML is correctly extracted.
+        """
+        raw_bytes = get_email_as_bytes("8bit_encoded.eml")
+        mail = parse_mail_from_bytes(raw_bytes)
+        parts = get_text(mail)
+        plain = parts["content"]
+        self.assertIn(
+            "Dzień dobry\n\nW odpowiedzi na wniosek dotyczący udostępnienia",
+            plain,
+            "8-bit coded PL characters not found in plain_content",
+        )
+        html = parts["html_content"]
+        self.assertIn(
+            "<p>Dzień dobry</p><p>W odpowiedzi na wniosek dotyczący udostępnienia",
+            html,
+            "8-bit coded PL characters not found in plain_content",
+        )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-    # unittest.main(verbosity=2, defaultTest="TestMain.test_pl_chars_emojis_and_quote")
+    # unittest.main(verbosity=2, defaultTest="TestMain.test_8bit_text_html")
