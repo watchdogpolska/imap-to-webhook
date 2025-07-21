@@ -7,7 +7,7 @@ from unittest.mock import patch
 from html2text import html2text
 
 from extract_raw_content import constants, html, text, utils
-from mail_parser import get_text, parse_mail_from_bytes, serialize_mail
+from mail_parser import get_text, get_to_plus, parse_mail_from_bytes, serialize_mail
 
 # ---------------------------------------------------------------------
 # Compatibility layer for the new (clean_html, quote_html) API introduced in
@@ -1354,6 +1354,35 @@ that this line is intact."""
             html,
             "8-bit coded PL characters not found in plain_content",
         )
+
+    def test_email_address_extraction(self):
+        """
+        Test that all expected email addresses are correctly extracted from the EML,
+        and that no invalid (None or empty) addresses are included.
+        """
+        raw_bytes = get_email_as_bytes("address_extraction_test.eml")
+        mail = parse_mail_from_bytes(raw_bytes)
+
+        to_plus = get_to_plus(mail)
+
+        # Check that all expected emails are present
+        expected_emails = {
+            "bob@example.com",
+            "carol@example.net",
+            "hidden@example.org",
+            "delivery@example.com",
+        }
+
+        for expected in expected_emails:
+            self.assertIn(
+                expected,
+                to_plus,
+                f"Expected email address {expected} not found in to_plus result.",
+            )
+
+        # Check that there are no None or empty strings
+        self.assertNotIn(None, to_plus, "None found in extracted email addresses")
+        self.assertNotIn("", to_plus, "Empty string found in extracted email addresses")
 
 
 if __name__ == "__main__":
