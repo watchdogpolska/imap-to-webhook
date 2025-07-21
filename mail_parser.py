@@ -10,6 +10,7 @@ from email.parser import BytesParser
 from io import BytesIO
 
 import mailparser
+from email_validator import EmailNotValidError, validate_email
 from html2text import html2text
 
 from extract_raw_content.html import strip_email_quote
@@ -17,8 +18,6 @@ from extract_raw_content.text import (
     exctract_quoted_from_plain,
     extract_non_quoted_from_plain,
 )
-
-# from extract_raw_content.utils import register_xpath_extensions
 
 decoder_map = {
     "base64": base64.b64decode,
@@ -33,7 +32,25 @@ GZ_MIME = "application/gzip"
 EML_MIME = "message/rfc822"
 BINARY_MIME = "application/octet-stream"
 
-# register_xpath_extensions()
+
+def validate_and_normalize(email):
+    try:
+        return validate_email(
+            email, check_deliverability=False
+        ).normalized  # Normalized email
+    except EmailNotValidError:
+        return None  # Invalid email
+
+
+def extract_emails(source):
+    if not source or not (
+        isinstance(source, list) or isinstance(source, tuple) or isinstance(source, set)
+    ):
+        return []
+    normalized = [validate_and_normalize(x[1]) for x in source if x and x[1]]
+    # Filter out None values and return a list of valid emails
+    extracted = [y for y in normalized if y]
+    return extracted
 
 
 def get_text(mail):
@@ -76,24 +93,31 @@ def get_auto_reply_type(mail):
 
 
 def get_to_plus(mail):
-    to_plus = set([x[1] for x in mail.to] if mail.to else [])
+    to_plus = set(extract_emails(mail.to)) if mail.to else set()
 
-    if mail.delivered_to:
-        to_plus.update(x[1] for x in mail.delivered_to)
-    if mail.cc:
-        to_plus.update(x[1] for x in mail.cc)
-    if mail.bcc:
-        to_plus.update(x[1] for x in mail.bcc)
+    to_plus.update(extract_emails(mail.delivered_to))
+    to_plus.update(extract_emails(mail.cc))
+    to_plus.update(extract_emails(mail.bcc))
     to_plus.update(
-        match.group(1)
+        normalized
+        for r in mail.received
+        if "others" in r
         for match in [
-            re.search(r"for ([a-zA-Z0-9\-]+@[a-zA-Z.]+)", r["others"])
-            for r in mail.received
-            if "others" in r
+            re.search(
+                r"for ([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", r["others"]
+            )
         ]
         if match
+        for normalized in [validate_and_normalize(match.group(1))]
+        if normalized
     )
-    to_plus.update(r["for"] for r in mail.received if "for" in r)
+    to_plus.update(
+        normalized
+        for r in mail.received
+        if "for" in r
+        for normalized in [validate_and_normalize(r["for"])]
+        if normalized
+    )
     return list(to_plus)
 
 
@@ -136,11 +160,11 @@ def get_manifest(mail, compress_eml):
     return {
         "headers": {
             "subject": mail.subject,
-            "to": [x[1] for x in mail.to] if mail.to else [],
+            "to": extract_emails(mail.to),
             "to+": get_to_plus(mail),
-            "from": [x[1] for x in mail._from] if mail.from_ else [],
+            "from": extract_emails(mail._from),
             "date": mail.date.isoformat() if mail.date else [],
-            "cc": [x[1] for x in mail.cc] if mail.cc else [],
+            "cc": extract_emails(mail.cc),
             "message_id": mail.message_id,
             "auto_reply_type": get_auto_reply_type(mail),
         },
