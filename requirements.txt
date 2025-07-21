@@ -6,3 +6,4 @@ ipdb==0.13.13
 lxml==6.0.0
 cssselect==1.3.0
 beautifulsoup4==4.13.4
+email-validator==2.2.0
