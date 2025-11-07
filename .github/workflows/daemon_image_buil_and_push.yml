@@ -15,7 +15,7 @@ jobs:
     # yamllint enable rule:line-length
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get version from script
         id: get_version
