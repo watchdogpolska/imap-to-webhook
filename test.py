@@ -1384,6 +1384,27 @@ that this line is intact."""
         self.assertNotIn(None, to_plus, "None found in extracted email addresses")
         self.assertNotIn("", to_plus, "Empty string found in extracted email addresses")
 
+    def test_valid_eml_from_header_is_parsed(self):
+        """
+        Regression test for empty 'from' list when parsing a real-world Polish EML.
+        The message contains a valid RFC From: header and must yield a non-empty,
+        normalized sender list.
+        """
+        raw_bytes = get_email_as_bytes(
+            "Re Wniosek o informację dot. publikacji rejestru umów.eml"
+        )
+        body = serialize_mail(raw_bytes)
+        body_map = {k: v for k, v in body}
+        manifest = json.loads(body_map["manifest"][1].read().decode("utf-8"))
+
+        from_list = manifest["headers"].get("from") or []
+        self.assertTrue(from_list, "Expected non-empty 'from' list for attached EML")
+        self.assertIn(
+            "sekretariat@powiatpultuski.pl",
+            from_list,
+            "Expected sender address not found in parsed 'from' list",
+        )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
