@@ -7,6 +7,7 @@ import re
 import uuid
 from email import policy
 from email.parser import BytesParser
+from email.utils import getaddresses
 from io import BytesIO
 
 import mailparser
@@ -42,15 +43,56 @@ def validate_and_normalize(email):
         return None  # Invalid email
 
 
-def extract_emails(source):
-    if not source or not (
-        isinstance(source, list) or isinstance(source, tuple) or isinstance(source, set)
-    ):
+def _coerce_addresses(source):
+    """
+    Normalize various address shapes into list[tuple(display_name, email)].
+    Supports:
+      - list/tuple/set of (name, email)
+      - string headers: "Name <a@b>", "a@b, c@d"
+      - dicts: {"email": ...} / {"address": ...} / {"name": ..., "email": ...}
+      - list of dicts (common in some parsers)
+    """
+    if not source:
         return []
-    normalized = [validate_and_normalize(x[1]) for x in source if x and x[1]]
-    # Filter out None values and return a list of valid emails
-    extracted = [y for y in normalized if y]
-    return extracted
+
+    # Already in [(name, email), ...] form
+    if isinstance(source, (list, tuple, set)):
+        src_list = list(source)
+        if (
+            src_list
+            and isinstance(src_list[0], (list, tuple))
+            and len(src_list[0]) >= 2
+        ):
+            return [(x[0], x[1]) for x in src_list if x and len(x) >= 2]
+        # list of dicts
+        if src_list and isinstance(src_list[0], dict):
+            out = []
+            for d in src_list:
+                if not d:
+                    continue
+                email = d.get("email") or d.get("address")
+                name = d.get("name") or d.get("display_name") or ""
+                if email:
+                    out.append((name, email))
+            return out
+
+    # Single dict
+    if isinstance(source, dict):
+        email = source.get("email") or source.get("address")
+        name = source.get("name") or source.get("display_name") or ""
+        return [(name, email)] if email else []
+
+    # Raw header string
+    if isinstance(source, str):
+        return getaddresses([source])
+
+    return []
+
+
+def extract_emails(source):
+    pairs = _coerce_addresses(source)
+    normalized = [validate_and_normalize(email) for _, email in pairs if email]
+    return [x for x in normalized if x]
 
 
 def get_text(mail):
@@ -156,13 +198,48 @@ def get_eml(raw_mail, compress_eml):
     return content
 
 
+def _has_any_email(x) -> bool:
+    if not x:
+        return False
+    # list/tuple of (name, email)
+    if isinstance(x, (list, tuple, set)):
+        for item in x:
+            if not item:
+                continue
+            if isinstance(item, (list, tuple)) and len(item) >= 2 and item[1]:
+                return True
+        return False
+    # string header
+    if isinstance(x, str):
+        return bool(x.strip())
+    # dict
+    if isinstance(x, dict):
+        return bool(x.get("email") or x.get("address") or x.get("From"))
+    return False
+
+
+def _pick_addresses(*candidates):
+    for c in candidates:
+        if _has_any_email(c):
+            return c
+    return None
+
+
 def get_manifest(mail, compress_eml):
+    from_source = _pick_addresses(
+        getattr(mail, "_from", None),  # prefer _from
+        getattr(mail, "from_", None),  # then from_
+        getattr(mail, "from", None),  # then from
+        getattr(mail, "headers", {}).get("From"),
+        getattr(mail, "mail", {}).get("from"),
+    )
+    from_result = extract_emails(from_source)
     return {
         "headers": {
             "subject": mail.subject,
             "to": extract_emails(mail.to),
             "to+": get_to_plus(mail),
-            "from": extract_emails(mail._from),
+            "from": from_result,
             "date": mail.date.isoformat() if mail.date else [],
             "cc": extract_emails(mail.cc),
             "message_id": mail.message_id,
@@ -177,6 +254,36 @@ def get_manifest(mail, compress_eml):
     }
 
 
+def _patch_addresses_from_stdlib(mp, raw_bytes):
+    """
+    Patch mp._from/mp.to/mp.cc when mailparser fails to parse addresses.
+    Uses Python stdlib email parsing as a reliable fallback.
+    """
+    msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
+
+    def header_pairs(name: str):
+        # returns list[(display_name, email)]
+        pairs = getaddresses(msg.get_all(name, []))
+        return [(n, a) for (n, a) in pairs if a]
+
+    # Patch only if mailparser produced empty/invalid address tuples
+    from_pairs = header_pairs("From")
+    if from_pairs and (
+        not getattr(mp, "_from", None) or all(not x[1] for x in mp._from if x)
+    ):
+        mp._from = from_pairs
+
+    to_pairs = header_pairs("To")
+    if to_pairs and (not getattr(mp, "to", None) or all(not x[1] for x in mp.to if x)):
+        mp.to = to_pairs
+
+    cc_pairs = header_pairs("Cc")
+    if cc_pairs and (not getattr(mp, "cc", None) or all(not x[1] for x in mp.cc if x)):
+        mp.cc = cc_pairs
+
+    return mp
+
+
 def parse_mail_from_bytes(raw_bytes):
     """
     Patch for mailparser bug.
@@ -184,6 +291,9 @@ def parse_mail_from_bytes(raw_bytes):
     decoded correctly, even when the original message uses 7bit/8bit CTE.
     """
     mp = mailparser.parse_from_bytes(raw_bytes)
+
+    # Patch addresses if mailparser produced empty ones
+    mp = _patch_addresses_from_stdlib(mp, raw_bytes)
 
     # Fast-exit if the message never uses 7bit/8bit encodings
     _CTE_78BIT_RE = re.compile(rb"^Content-Transfer-Encoding:\s*[78]bit\b", re.I | re.M)
