@@ -11,7 +11,7 @@ from email.utils import getaddresses
 from io import BytesIO
 
 import mailparser
-from email_validator import EmailNotValidError, validate_email
+from email_validator import validate_email
 from html2text import html2text
 
 from extract_raw_content.html import strip_email_quote
