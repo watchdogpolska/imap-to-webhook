@@ -11,7 +11,7 @@ from email.utils import getaddresses
 from io import BytesIO
 
 import mailparser
-from email_validator import EmailNotValidError, validate_email
+from email_validator import validate_email
 from html2text import html2text
 
 from extract_raw_content.html import strip_email_quote
@@ -32,15 +32,23 @@ JSON_MIME = "application/json"
 GZ_MIME = "application/gzip"
 EML_MIME = "message/rfc822"
 BINARY_MIME = "application/octet-stream"
+_BASIC_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+$")  # intentionally permissive
 
 
-def validate_and_normalize(email):
+def validate_and_normalize(addr: str) -> str | None:
+    if not addr:
+        return None
+    addr = addr.strip().strip("<>").strip().strip('"').strip("'")
+
+    # First try strict/standard validation
     try:
-        return validate_email(
-            email, check_deliverability=False
-        ).normalized  # Normalized email
-    except EmailNotValidError:
-        return None  # Invalid email
+        v = validate_email(addr, check_deliverability=False)
+        return v.normalized.lower()
+    except Exception:
+        # Fallback: accept internal domains if they look like an email
+        if _BASIC_EMAIL_RE.match(addr):
+            return addr.lower()
+        return None
 
 
 def _coerce_addresses(source):
@@ -272,6 +280,8 @@ def _patch_addresses_from_stdlib(mp, raw_bytes):
         not getattr(mp, "_from", None) or all(not x[1] for x in mp._from if x)
     ):
         mp._from = from_pairs
+        if getattr(mp, "from_", None) is not None:
+            mp.from_ = from_pairs
 
     to_pairs = header_pairs("To")
     if to_pairs and (not getattr(mp, "to", None) or all(not x[1] for x in mp.to if x)):
