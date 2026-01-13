@@ -7,8 +7,8 @@ import re
 import uuid
 from email import policy
 from email.header import Header as EmailHeader
-from email.policy import compat32
 from email.parser import BytesParser
+from email.policy import compat32
 from email.utils import getaddresses
 from io import BytesIO
 
@@ -269,11 +269,13 @@ def _patch_addresses_from_stdlib(mp, raw_bytes):
     Patch mp._from/mp.to/mp.cc when mailparser fails to parse addresses.
     Uses Python stdlib email parsing as a reliable fallback.
     """
+
     def parse_msg(pol):
         return BytesParser(policy=pol).parsebytes(raw_bytes)
 
     def header_pairs(msg, name: str):
-        # getaddresses expects list of strings; stdlib may return header objects in some policies
+        # getaddresses expects list of strings; stdlib may return header objects
+        # in some policies
         vals = msg.get_all(name, []) or []
         vals = [str(v) for v in vals]  # important: coerce Header/objects to str
         pairs = getaddresses(vals)
@@ -307,6 +309,7 @@ def _patch_addresses_from_stdlib(mp, raw_bytes):
 
     return mp
 
+
 def _coerce_header_objects_to_str(msg):
     """
     mailparser assumes Message.get(name) returns str/bytes.
@@ -324,6 +327,7 @@ def _coerce_header_objects_to_str(msg):
                 part[name] = str(val)
     return msg
 
+
 def parse_mail_from_bytes(raw_bytes):
     """
     Patch for mailparser bug.
@@ -332,7 +336,7 @@ def parse_mail_from_bytes(raw_bytes):
     """
     try:
         mp = mailparser.parse_from_bytes(raw_bytes)
-    except TypeError as e:
+    except TypeError:
         # Work around mailparser failing when a header value is an email.header.Header
         # (observed on Python 3.14 with some messages having Content-Disposition etc.).
         msg = BytesParser(policy=compat32).parsebytes(raw_bytes)
