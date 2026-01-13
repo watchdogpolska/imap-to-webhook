@@ -6,7 +6,9 @@ import quopri
 import re
 import uuid
 from email import policy
+from email.header import Header as EmailHeader
 from email.parser import BytesParser
+from email.policy import compat32
 from email.utils import getaddresses
 from io import BytesIO
 
@@ -267,15 +269,31 @@ def _patch_addresses_from_stdlib(mp, raw_bytes):
     Patch mp._from/mp.to/mp.cc when mailparser fails to parse addresses.
     Uses Python stdlib email parsing as a reliable fallback.
     """
-    msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
 
-    def header_pairs(name: str):
-        # returns list[(display_name, email)]
-        pairs = getaddresses(msg.get_all(name, []))
+    def parse_msg(pol):
+        return BytesParser(policy=pol).parsebytes(raw_bytes)
+
+    def header_pairs(msg, name: str):
+        # getaddresses expects list of strings; stdlib may return header objects
+        # in some policies
+        vals = msg.get_all(name, []) or []
+        vals = [str(v) for v in vals]  # important: coerce Header/objects to str
+        pairs = getaddresses(vals)
         return [(n, a) for (n, a) in pairs if a]
 
+    # Prefer default policy; fallback to compat32 if anything is weird
+    try:
+        msg = parse_msg(policy.default)
+        from_pairs = header_pairs(msg, "From")
+        to_pairs = header_pairs(msg, "To")
+        cc_pairs = header_pairs(msg, "Cc")
+    except Exception:
+        msg = parse_msg(compat32)
+        from_pairs = header_pairs(msg, "From")
+        to_pairs = header_pairs(msg, "To")
+        cc_pairs = header_pairs(msg, "Cc")
+
     # Patch only if mailparser produced empty/invalid address tuples
-    from_pairs = header_pairs("From")
     if from_pairs and (
         not getattr(mp, "_from", None) or all(not x[1] for x in mp._from if x)
     ):
@@ -283,15 +301,31 @@ def _patch_addresses_from_stdlib(mp, raw_bytes):
         if getattr(mp, "from_", None) is not None:
             mp.from_ = from_pairs
 
-    to_pairs = header_pairs("To")
     if to_pairs and (not getattr(mp, "to", None) or all(not x[1] for x in mp.to if x)):
         mp.to = to_pairs
 
-    cc_pairs = header_pairs("Cc")
     if cc_pairs and (not getattr(mp, "cc", None) or all(not x[1] for x in mp.cc if x)):
         mp.cc = cc_pairs
 
     return mp
+
+
+def _coerce_header_objects_to_str(msg):
+    """
+    mailparser assumes Message.get(name) returns str/bytes.
+    Under some policies / Python versions, it can return email.header.Header.
+    Coerce those headers to plain strings in-place across all MIME parts.
+    """
+    for part in msg.walk():
+        # Only headers that mailparser touches early are strictly necessary,
+        # but doing all headers is safe and keeps behavior consistent.
+        for name in list(part.keys()):
+            val = part.get(name)
+            if isinstance(val, EmailHeader):
+                # Replace Header object with its string representation
+                del part[name]
+                part[name] = str(val)
+    return msg
 
 
 def parse_mail_from_bytes(raw_bytes):
@@ -300,7 +334,14 @@ def parse_mail_from_bytes(raw_bytes):
     Return a MailParser.MailParser object whose UTF-8 text parts are always
     decoded correctly, even when the original message uses 7bit/8bit CTE.
     """
-    mp = mailparser.parse_from_bytes(raw_bytes)
+    try:
+        mp = mailparser.parse_from_bytes(raw_bytes)
+    except TypeError:
+        # Work around mailparser failing when a header value is an email.header.Header
+        # (observed on Python 3.14 with some messages having Content-Disposition etc.).
+        msg = BytesParser(policy=compat32).parsebytes(raw_bytes)
+        msg = _coerce_header_objects_to_str(msg)
+        mp = mailparser.core.MailParser(msg)
 
     # Patch addresses if mailparser produced empty ones
     mp = _patch_addresses_from_stdlib(mp, raw_bytes)
