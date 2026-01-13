@@ -1405,6 +1405,27 @@ that this line is intact."""
             "Expected sender address not found in parsed 'from' list",
         )
 
+    def test_valid_eml_v2_from_header_is_parsed(self):
+        """
+        Regression test for empty 'from' list when parsing a real-world Polish EMLv2.
+        The message contains a valid RFC From: header and must yield a non-empty,
+        normalized sender list.
+        """
+        raw_bytes = get_email_as_bytes(
+            "Przeczytano Wniosek o informację publiczną- dane schroniska.eml"
+        )
+        body = serialize_mail(raw_bytes)
+        body_map = {k: v for k, v in body}
+        manifest = json.loads(body_map["manifest"][1].read().decode("utf-8"))
+
+        from_list = manifest["headers"].get("from") or []
+        self.assertTrue(from_list, "Expected non-empty 'from' list for attached EML")
+        self.assertIn(
+            "kancelaria@uggrudziadz.local",
+            from_list,
+            "Expected sender address not found in parsed 'from' list",
+        )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
