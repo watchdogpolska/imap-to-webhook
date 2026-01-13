@@ -1,0 +1,129 @@
+Return-Path: <>
+Delivered-To: main4@fedrowanie.siecobywatelska.pl
+Received: from mail32.zenbox.pl ([10.0.5.92])
+	by storage-s7.zenbox.pl with LMTP
+	id YIUSJloVSWlWAwAAtk30Dw:P1
+	(envelope-from <>)
+	for <main4@fedrowanie.siecobywatelska.pl>; Mon, 22 Dec 2025 10:54:34 +0100
+Received: from mail32.zenbox.pl
+	by mail32.zenbox.pl with LMTP
+	id YIUSJloVSWlWAwAAtk30Dw
+	(envelope-from <>)
+	for <main4@fedrowanie.siecobywatelska.pl>; Mon, 22 Dec 2025 10:54:34 +0100
+Received: from mail32.zenbox.pl (localhost [127.0.0.1])
+	by mail32.zenbox.pl (Postfix) with ESMTP id 9A4F443CD2D7
+	for <main4@fedrowanie.siecobywatelska.pl>; Mon, 22 Dec 2025 10:54:34 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mail32.zenbox.pl
+Authentication-Results: mail32.zenbox.pl (amavisd-new); dkim=neutral
+ reason="invalid (public key: not available)" header.d=uggrudziadz.local
+Received: from mail32.zenbox.pl ([127.0.0.1])
+ by mail32.zenbox.pl (mail32.zenbox.pl [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 76f8w7BQvuGa for <main4@fedrowanie.siecobywatelska.pl>;
+ Mon, 22 Dec 2025 10:54:34 +0100 (CET)
+Received-SPF: None (no SPF record) identity=no SPF record; client-ip=89.238.53.156; helo=mail.uggrudziadz.local; envelope-from=<>; receiver=sprawa-109119@monitoring.obywatelpies.org 
+Received: from mail.uggrudziadz.local (156.53.238.89.static.smgr.pl [89.238.53.156])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail32.zenbox.pl (Postfix) with ESMTPS id 5936243CD2D6
+	for <sprawa-109119@monitoring.obywatelpies.org>; Mon, 22 Dec 2025 10:54:34 +0100 (CET)
+Received: from mail.uggrudziadz.local (mail.uggrudziadz.local [127.0.0.1])
+	by mail.uggrudziadz.local (Postfix) with ESMTP id 4dZYQK6STQz44HFw
+	for <sprawa-109119@monitoring.obywatelpies.org>; Mon, 22 Dec 2025 10:54:33 +0100 (CET)
+Authentication-Results: mail.uggrudziadz.local (amavisd-new); dkim=pass
+	reason="pass (just generated, assumed good)"
+	header.d=uggrudziadz.local
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+	uggrudziadz.local; h=x-mailer:content-type:mime-version
+	:message-id:date:subject:in-reply-to:to:from; s=dkim; t=
+	1766397273; x=1768989274; bh=1f+6YPAg8avMwb2RtjyhpRrdB/fXNjVSwmX
+	XNDmlYVI=; b=qig1uojwFaWQv/VNLRkKu3NIe2jLDtXkiF7S1VDZep8dbAlGS2B
+	67Djis0ykih3Cx7y/jl1dWc4B+bkceTstyi1WoWhaUqaEfqlQoVBJrJBvf6TWa0B
+	sNocmpbr5AtQCXCn2kP51qDqTT1JfU8/oc1a/P9GwicqeG+w9dZ82orzu45KNLFR
+	toYL0IIN8+6X2kNr85ZNswRVYiG/iQCwN0MOI9xMJgVSXfi5HnEfOuTCgJhHL0nv
+	5Toq5mi/SBC2n7ODJR2HLXphnD1QqJHsXNWETZoS6GFnKNiiNMFrFsDmxQmqxWoe
+	8IcfqJNQzoB0nvepZ/yEIJCU9tFUaud2gGQ==
+X-Virus-Scanned: Debian amavisd-new at mail.uggrudziadz.local
+Received: from mail.uggrudziadz.local ([127.0.0.1])
+	by mail.uggrudziadz.local (mail.uggrudziadz.local [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id 9QB1Y6oWNOrh
+	for <sprawa-109119@monitoring.obywatelpies.org>;
+	Mon, 22 Dec 2025 10:54:33 +0100 (CET)
+Received: from BOIKANCELARIA (unknown [192.168.0.112])
+	by mail.uggrudziadz.local (Postfix) with ESMTPSA id 4dZYQK3xN2z44HFt
+	for <sprawa-109119@monitoring.obywatelpies.org>; Mon, 22 Dec 2025 10:54:33 +0100 (CET)
+From: <kancelaria@uggrudziadz.local>
+To: <sprawa-109119@monitoring.obywatelpies.org>
+In-Reply-To: <176639567503.238.9068267970733961516@monitoring.obywatelpies.org>
+Subject: =?utf-8?Q?Przeczytano:_Wniosek_o_informacj?=
+	=?utf-8?Q?=C4=99_publiczn=C4=85-_dane_schroniska?=
+Date: Mon, 22 Dec 2025 11:06:44 +0100
+Message-ID: <004e01dc732a$ad24e810$076eb830$@uggrudziadz.local>
+MIME-Version: 1.0
+Content-Type: multipart/report;
+	boundary="----=_NextPart_000_004F_01DC7333.0EE95010";
+	report-type=disposition-notification
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQEgKfyEV8kekQcHWMHL7kIYIehcV7amAVFk
+
+This is a multipart message in MIME format.
+
+------=_NextPart_000_004F_01DC7333.0EE95010
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_0050_01DC7333.0EE95010"
+
+
+------=_NextPart_001_0050_01DC7333.0EE95010
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Twoja wiadomo=C5=9B=C4=87
+
+    Do:  ug@grudziadz.ug.gov.pl
+    Temat: Wniosek o informacj=C4=99 publiczn=C4=85- dane schroniska
+    Wys=C5=82ano:  22.12.2025 10:27
+
+odczytano w dniu 22.12.2025 11:06.
+
+------=_NextPart_001_0050_01DC7333.0EE95010
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dutf-8">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+16.0.19127.20082">
+<TITLE></TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+
+<P><FONT SIZE=3D2>Twoja wiadomo=C5=9B=C4=87<BR>
+<BR>
+&nbsp;&nbsp;&nbsp; Do:&nbsp; ug@grudziadz.ug.gov.pl<BR>
+&nbsp;&nbsp;&nbsp; Temat: Wniosek o informacj=C4=99 publiczn=C4=85- dane =
+schroniska<BR>
+&nbsp;&nbsp;&nbsp; Wys=C5=82ano:&nbsp; 22.12.2025 10:27<BR>
+<BR>
+odczytano w dniu 22.12.2025 11:06.</FONT>
+</P>
+
+</BODY>
+</HTML>
+------=_NextPart_001_0050_01DC7333.0EE95010--
+
+------=_NextPart_000_004F_01DC7333.0EE95010
+Content-Type: message/disposition-notification
+Content-Transfer-Encoding: 7bit
+
+Reporting-UA: uggrudziadz.local; Microsoft Outlook 16.0
+Final-Recipient: rfc822;kancelaria@uggrudziadz.local
+Original-Message-ID: <176639567503.238.9068267970733961516@monitoring.obywatelpies.org>
+Disposition: manual-action/MDN-sent-manually; displayed
+
+------=_NextPart_000_004F_01DC7333.0EE95010--
+
