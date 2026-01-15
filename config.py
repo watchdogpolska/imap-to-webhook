@@ -25,6 +25,7 @@ def get_config(env):
             "error": default_qs(imap_parse.query, "error", "ERROR"),
             "on_success": env.get("ON_SUCCESSS", "move"),
             "success": default_qs(imap_parse.query, "success", "SUCCESS"),
+            "refused": default_qs(imap_parse.query, "refused", "REFUSED"),
         },
         "webhook": webhook,
         "compress_eml": env.get("COMPRESS_EML", "false") == "true",
