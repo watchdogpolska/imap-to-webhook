@@ -61,6 +61,23 @@ def process_msg(client, msg_id, config, session, sentry_client=None):
         print("Message serialized in {} seconds".format(end - start))
         res = session.post(config["webhook"], files=body)
         print("Received response:", res.text)
+        # detect structured refusal and move to REFUSED folder
+        if res.status_code >= 400:
+            refused_folder = config["imap"].get("refused", "REFUSED")
+            # parse JSON refusal marker
+            payload = None
+            try:
+                payload = res.json()
+            except Exception:
+                payload = None
+            if isinstance(payload, dict) and payload.get("status") == "REFUSED":
+                print(
+                    f"Message refused by webhook (reason={payload.get('reason')}); "
+                    f"moving msg id {msg_id} to {refused_folder}"
+                )
+                client.move(msg_id, refused_folder)
+                return
+        # process real errors
         res.raise_for_status()
         response = res.json()
         print("Delivered message id {} :".format(msg_id), response)
