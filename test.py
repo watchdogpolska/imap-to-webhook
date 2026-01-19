@@ -589,16 +589,14 @@ Sent from Samsung MobileName <address@example.com> wrote:
     def test_pattern_on_date_wrote_somebody(self):
         self.assertEqual(
             "Lorem",
-            text.extract_non_quoted_from_plain(
-                """Lorem
+            text.extract_non_quoted_from_plain("""Lorem
 
 Op 13-02-2014 3:18 schreef Julius Caesar <pantheon@rome.com>:
 
 Veniam laborum mlkshk kale chips authentic.
 Normcore mumblecore laboris, fanny pack readymade eu blog chia pop-up
 freegan enim master cleanse.
-"""
-            ),
+"""),
         )
 
     def test_pattern_on_date_somebody_wrote_date_with_slashes(self):
@@ -825,8 +823,7 @@ Sent from Acompli"""
     def test_english_from_block(self):
         self.assertEqual(
             "Allo! Follow up MIME!",
-            text.extract_non_quoted_from_plain(
-                """Allo! Follow up MIME!
+            text.extract_non_quoted_from_plain("""Allo! Follow up MIME!
 
 From: somebody@example.com
 Sent: March-19-11 5:42 PM
@@ -834,15 +831,13 @@ To: Somebody
 Subject: The manager has commented on your Loop
 
 Blah-blah-blah
-"""
-            ),
+"""),
         )
 
     def test_german_from_block(self):
         self.assertEqual(
             "Allo! Follow up MIME!",
-            text.extract_non_quoted_from_plain(
-                """Allo! Follow up MIME!
+            text.extract_non_quoted_from_plain("""Allo! Follow up MIME!
 
 Von: somebody@example.com
 Gesendet: Dienstag, 25. November 2014 14:59
@@ -850,15 +845,13 @@ An: Somebody
 Betreff: The manager has commented on your Loop
 
 Blah-blah-blah
-"""
-            ),
+"""),
         )
 
     def test_french_multiline_from_block(self):
         self.assertEqual(
             "Lorem ipsum",
-            text.extract_non_quoted_from_plain(
-                """Lorem ipsum
+            text.extract_non_quoted_from_plain("""Lorem ipsum
 
 De : Brendan xxx [mailto:brendan.xxx@xxx.com]
 Envoyé : vendredi 23 janvier 2015 16:39
@@ -866,42 +859,36 @@ Envoyé : vendredi 23 janvier 2015 16:39
 Objet : Follow Up
 
 Blah-blah-blah
-"""
-            ),
+"""),
         )
 
     def test_french_from_block(self):
         self.assertEqual(
             "Lorem ipsum",
-            text.extract_non_quoted_from_plain(
-                """Lorem ipsum
+            text.extract_non_quoted_from_plain("""Lorem ipsum
 
     Le 23 janv. 2015 à 22:03, Brendan xxx
     <brendan.xxx@xxx.com<mailto:brendan.xxx@xxx.com>> a écrit:
 
-    Bonjour!"""
-            ),
+    Bonjour!"""),
         )
 
     def test_polish_from_block(self):
         self.assertEqual(
             "Lorem ipsum",
-            text.extract_non_quoted_from_plain(
-                """Lorem ipsum
+            text.extract_non_quoted_from_plain("""Lorem ipsum
 
 W dniu 28 stycznia 2015 01:53 użytkownik Zoe xxx <zoe.xxx@xxx.com>
 napisał:
 
 Blah!
-"""
-            ),
+"""),
         )
 
     def test_danish_from_block(self):
         self.assertEqual(
             "Allo! Follow up MIME!",
-            text.extract_non_quoted_from_plain(
-                """Allo! Follow up MIME!
+            text.extract_non_quoted_from_plain("""Allo! Follow up MIME!
 
 Fra: somebody@example.com
 Sendt: 19. march 2011 12:10
@@ -909,51 +896,44 @@ Til: Somebody
 Emne: The manager has commented on your Loop
 
 Blah-blah-blah
-"""
-            ),
+"""),
         )
 
     def test_swedish_from_block(self):
         self.assertEqual(
             "Allo! Follow up MIME!",
-            text.extract_non_quoted_from_plain(
-                """Allo! Follow up MIME!
+            text.extract_non_quoted_from_plain("""Allo! Follow up MIME!
 Från: Anno Sportel [mailto:anno.spoel@hsbcssad.com]
 Skickat: den 26 augusti 2015 14:45
 Till: Isacson Leiff
 Ämne: RE: Week 36
 
 Blah-blah-blah
-"""
-            ),
+"""),
         )
 
     def test_swedish_from_line(self):
         self.assertEqual(
             "Lorem",
-            text.extract_non_quoted_from_plain(
-                """Lorem
+            text.extract_non_quoted_from_plain("""Lorem
 Den 14 september, 2015 02:23:18, Valentino Rudy (valentino@rudy.be) skrev:
 
 Veniam laborum mlkshk kale chips authentic.
 Normcore mumblecore laboris, fanny pack
 readymade eu blog chia pop-up freegan enim master cleanse.
-"""
-            ),
+"""),
         )
 
     def test_norwegian_from_line(self):
         self.assertEqual(
             "Lorem",
-            text.extract_non_quoted_from_plain(
-                """Lorem
+            text.extract_non_quoted_from_plain("""Lorem
 På 14 september 2015 på 02:23:18, Valentino Rudy (valentino@rudy.be) skrev:
 
 Veniam laborum mlkshk kale chips authentic.
 Normcore mumblecore laboris, fanny pack
 readymade eu blog chia pop-up freegan enim master cleanse.
-"""
-            ),
+"""),
         )
 
     def test_dutch_from_block(self):
@@ -973,14 +953,12 @@ Small batch beard laboris tempor, non listicle hella Tumblr heirloom.
     def test_vietnamese_from_block(self):
         self.assertEqual(
             "Hello",
-            text.extract_non_quoted_from_plain(
-                """Hello
+            text.extract_non_quoted_from_plain("""Hello
 
 Vào 14:24 8 tháng 6, 2017, Hùng Nguyễn <hungnguyen@xxx.com> đã viết:
 
 > Xin chào
-"""
-            ),
+"""),
         )
 
     def test_quotation_marker_false_positive(self):
