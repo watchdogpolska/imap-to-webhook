@@ -1,5 +1,5 @@
 html2text==2025.4.15
-requests==2.34.0
+requests==2.34.2
 sentry-sdk==2.59.0
 ipdb==0.13.13
 lxml==6.1.0
