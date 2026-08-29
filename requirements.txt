@@ -4,5 +4,5 @@ sentry-sdk==2.68.1
 ipdb==0.13.13
 lxml==6.1.2
 cssselect==1.4.0
-beautifulsoup4==4.14.3
+beautifulsoup4==4.15.0
 email-validator==2.3.0
